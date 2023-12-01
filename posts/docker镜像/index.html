@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html><head>
+<title>Docker镜像</title>
+
+
+
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="Esmeralda">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+<meta property="og:title" content="Docker镜像" />
+<meta property="og:description" content="Esmeralda" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="localhost/posts/docker%E9%95%9C%E5%83%8F/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-11-20T12:36:08-04:00" />
+<meta property="article:modified_time" content="2023-11-20T12:36:08-04:00" /><meta property="og:site_name" content="My Blog" />
+
+
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker镜像"/>
+<meta name="twitter:description" content="Esmeralda"/>
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "abcdefghzd");
+</script>
+
+
+
+  
+
+
+
+
+
+
+      <script src="/localhost/js/toc.js"></script>
+    
+    <link type="text/css" rel="stylesheet" href="/localhost/vendor/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="/localhost/scss/dark-mode.min.cb53f1bee2b8900cb4f082afbf00175d6618f281cf9a2fe8619e3b52d20b5721.css" integrity="sha256-y1PxvuK4kAy08IKvvwAXXWYY8oHPmi/oYZ47UtILVyE=" media="screen">
+
+
+<link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Material+Icons">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>console.log("Hello from 'layouts/partials/extended_head.html'")</script>
+
+</head>
+<body>
+    	<div id="app"><div class="single-column-drawer-container" id="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="localhost/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="localhost/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="localhost/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="localhost/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e5%ae%9a%e4%bd%8d" class="nav-镜像定位">
+									镜像定位
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e8%87%aa%e5%8a%a8%e5%8c%96%e9%95%9c%e5%83%8f" class="nav-自动化镜像">
+									自动化镜像
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e6%93%8d%e4%bd%9c" class="nav-镜像操作">
+									镜像操作
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1docker-pull" class="nav-1docker-pull">
+									1、docker pull
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2docker-images" class="nav-2docker-images">
+									2、docker images
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#3-docker-search" class="nav-3-docker-search">
+									3、 docker search
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#4docker-rmi" class="nav-4docker-rmi">
+									4、docker rmi
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#5%e5%af%bc%e5%85%a5%e5%af%bc%e5%87%ba%e9%95%9c%e5%83%8f" class="nav-5导入导出镜像">
+									5、导入导出镜像
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e5%88%86%e5%b1%82" class="nav-镜像分层">
+									镜像分层
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1%e9%95%9c%e5%83%8f%e5%b1%82%e6%9e%84%e6%88%90" class="nav-1镜像层构成">
+									1、镜像层构成
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e6%91%98%e8%a6%81" class="nav-镜像摘要">
+									镜像摘要
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%a4%9a%e6%9e%b6%e6%9e%84%e9%95%9c%e5%83%8f" class="nav-多架构镜像">
+									多架构镜像
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div id="drawer-mask" v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav id="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div id="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a id="navTitle" class="navbar-brand" href="localhost">
+            My Site
+        </a>
+        
+        <button type="button" class="nav-darkmode-toggle" id="darkModeToggleButton2">
+            <i class="material-icons" id="darkModeToggleIcon2">
+                dark_mode
+            </i>
+        </button>
+        
+    </div>
+</nav>
+<div class="single-column-header-container" id="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="localhost">
+        <div class="single-column-header-title">My Site</div>
+        
+        <div class="single-column-header-subtitle">Themed by Diary.</div>
+        
+
+    </a>
+</div>
+
+            <div id="content">
+                <div id="streamContainer" class="stream-container">
+
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+                
+            
+
+            <div class="post-head-wrapper"
+                
+                    
+                    
+                    style="background-image: url('/images/esmeralda.jpg')"
+                    
+                
+            >
+                <div class="post-title">
+                    Docker镜像
+                    
+                    <div class="post-subtitle">
+                        Esmeralda
+                    </div>
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2023-11-20 12:36
+                        </time>
+                        
+
+                        
+                            <i class="material-icons" style="">folder</i>
+                                <a href="/categories/docker">docker</a>
+                                &nbsp;
+                        
+
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                
+                <div class="post-body" v-pre>
+                
+                    <h2 id="镜像定位">镜像定位</h2>
+<p>对于任何镜像，都可通过<!-- raw HTML omitted -->:<!-- raw HTML omitted -->进行唯一定位。其中<!-- raw HTML omitted -->一般称为镜像的版本号。<!-- raw HTML omitted -->中有一个比较特殊的版本&ndash;latest。如果不指定，默认<!-- raw HTML omitted -->即为 latest。</p>
+<h4 id="自动化镜像">自动化镜像</h4>
+<p><img src="C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231120101446.png" alt="微信图片_20231120101446"></p>
+<p>AUTOMATED 表示当前镜像是否是“自动化镜像”什么是自动化镜像?就是使用 DockerHub 连接一个包含 Dockerfile 文件(专门构建镜像用的文件)的 GitHub 仓库或 Bitbucket 仓库的源码托管平台，然后 Docker Hub 就会自动根据 Dockerfile 内容构建镜像。这种构建出的镜像会被标记为AUTOMATED,这种构建镜像的方式称为 Trusted Build(受信构建)。只要 Dockerfile文件内容发生变化，那么 Docker Hub 就会构建出新的镜像。</p>
+<h2 id="镜像操作">镜像操作</h2>
+<h4 id="1docker-pull">1、docker pull</h4>
+<h4 id="2docker-images">2、docker images</h4>
+<h4 id="3-docker-search">3、 docker search</h4>
+<p>​	通过docker search可以从docker hub上查看指定名称的镜像</p>
+<h4 id="4docker-rmi">4、docker rmi</h4>
+<p>​	删除本地镜像</p>
+<ul>
+<li>
+<p>-f，&ndash;force  强制移除打开了容器的镜像</p>
+</li>
+<li>
+<p>&ndash;no-prune</p>
+</li>
+</ul>
+<h4 id="5导入导出镜像">5、导入导出镜像</h4>
+<pre tabindex="0"><code class="language-dock" data-lang="dock">docker save -o my.tar tomacat:8.5.32 zookeeper：3.7
+docker save tomacat:8.5.32 zookeeper：3.7 &gt; zt.tar
+
+docker load -i my.tar
+</code></pre><h2 id="镜像分层">镜像分层</h2>
+<p>Docker 镜像由一些松合的<strong>只读</strong>镜像层组成，Docker Daemon 负责堆叠这些镜像层，并将它们关联为一个统一的整体，即对外表现出的是一个独立的对象。</p>
+<p>通过 docker pull 命令拉取指定的镜像时,每个 Pull complete 结尾的行就代表下载完毕了一个镜像层。</p>
+<p>不过，分层结构的最大的好处是，在不同镜像间实现资源共享，即不同镜像对相同下层镜像的复用。对于 docker pull 命令,其在拉取之前会先获取到其要拉取镜像的所有 imagelD,然后在本地查找是否存在这些分层。如果存在，则不再进行拉取，而是共享本地的该分层大大节点的存储空间与网络带宽，提升了拉取效率。</p>
+<h4 id="1镜像层构成">1、镜像层构成</h4>
+<p>每个镜像层由两部分构成：镜像文件系统与镜像Json文件。</p>
+<ul>
+<li>镜像文件系统（FS)构成</li>
+</ul>
+<p>​	(1)基础镜像层</p>
+<p>​	所有镜像的最下层都具有一个可以看得到的基础镜像层 Base lmage,基础镜像层的文件系统称为根文件系统 rootfs。而 rootfs 则是建立在 Linux 系统中“看不到的”引导文件系统bootfs 之上。</p>
+<p>​	(2)拓展镜像层</p>
+<p>​	在基础镜像层之上的镜像层称为扩展镜像层。顾名思义,其是对基础镜像层功能的扩展。在 Dockerfile 中，每条指令都是用于完成某项特定功能的，而每条指令都会生成一个扩展镜像层。</p>
+<p><img src="C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231120110925.png" alt="微信图片_20231120110925"></p>
+<p>(3)容器层</p>
+<p>​	一旦镜像运行了起来就形成了容器，而容器就是一个运行中的 Linux 系统，其也是具有文件系统的。容器的这个文件系统是在 docker 镜像最外层之上增加了一个可读写的容器层对文件的任何更改都只存在于容器层。因此任何对容器的操作都不会影响到镜像本身。</p>
+<p>​	容器层如果需要修改某个文件，系统会从容器层开始向下一层层的查找该文件，直到找到为止。任何对于文件的操作都会记录在容器层。例如，要修改某文件，容器层会首先把在镜像层找到的文件 copy 到容器层，然后再进行修改。删除文件也只会将存在于容器层中的文件副本删除。</p>
+<p>​	可以看出,Docker 容器就是一个叠加后的文件系统,而这个容器层称为 Union File System,联合文件系统。</p>
+<h5 id="拓展linuxos启动过程">拓展、LinuxOS启动过程</h5>
+<p>​	Linux的bootfs文件系统由两部分构成：bootloader和kernel</p>
+<p><img src="C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231120121826.png" alt=""></p>
+<h2 id="镜像摘要">镜像摘要</h2>
+<p>一串长度64位的16进制字符串，是镜像内容的哈希值，是内容散列。</p>
+<p>Docker 默认采用的 Hash 算法是 SHA256，即 Hah 值是一个长度为 256 位的二进制值Docker 使用 16 进制表示，即变为了长度为 64 位的字符串。</p>
+<p>主要是用来区分相同&lt;repository&gt;:&lt;tag&gt;的不同镜像</p>
+<h2 id="多架构镜像">多架构镜像</h2>
+<p>多架构镜像，是某<!-- raw HTML omitted -->中的某<!-- raw HTML omitted -->镜像针对不同操作系统/系统架构的不同镜像实现。即多架构镜像中包含的镜像的<!-- raw HTML omitted -->:<!-- raw HTML omitted -->都是相同的，但它们针对的操作系统/系统架构是不同的。</p>
+<p>在 Docker Hub 中，镜像的多架构信息保存在 Manifest 文件中。在拉取镜像时，Docker会随着 pull 命令将当前 Docker 系统的 OS 与架构信息一并提交给 Docker Hub。Docker Hub 首先会根据镜像的<!-- raw HTML omitted -->:<!-- raw HTML omitted -->查找是否存在 Manifest。如果不存在，则直接查找并返回<!-- raw HTML omitted -->:<!-- raw HTML omitted -->镜像即可: 如果存在，则会在 Manifest 中查找是否存在指定系统/架构的镜像。如果存在该系统/架构，则根据 Manifest 中记录的地址找到该镜像的位置。</p>
+
+                    
+                    <HR width="100%" id="EOF">
+		    <p style="color:#777;">最后修改于 2023-11-20</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="localhost/posts/docker%E5%AE%B9%E5%99%A8/">
+			下回<br>Docker容器
+                </a>
+                
+                
+                
+                <a class="older-posts" href="localhost/posts/docker%E6%A6%82%E8%BF%B0/">
+			上回<br>Docker概述
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://giscus.app/client.js"
+        data-repo="username/repo"
+        data-repo-id="**************************"
+        data-category="General"
+        data-category-id="*********************"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+</script>
+
+            </div>
+        </div>
+    </div>
+
+
+                    </div>
+            </div><div id="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="localhost">
+    
+        <div class="nav-title">
+            My Site
+        </div>
+        
+        <div class="nav-subtitle">
+            Themed by Diary.
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="localhost/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="localhost/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="localhost/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="localhost/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://risehere.net/">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	This is a customized copyright.
+	
+
+    </div>
+    
+</div><div id="extraContainer" class="extra-container">
+    <div class="toc-wrapper">
+        
+
+        
+        <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e5%ae%9a%e4%bd%8d" class="nav-镜像定位">
+									镜像定位
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e8%87%aa%e5%8a%a8%e5%8c%96%e9%95%9c%e5%83%8f" class="nav-自动化镜像">
+									自动化镜像
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e6%93%8d%e4%bd%9c" class="nav-镜像操作">
+									镜像操作
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1docker-pull" class="nav-1docker-pull">
+									1、docker pull
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2docker-images" class="nav-2docker-images">
+									2、docker images
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#3-docker-search" class="nav-3-docker-search">
+									3、 docker search
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#4docker-rmi" class="nav-4docker-rmi">
+									4、docker rmi
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#5%e5%af%bc%e5%85%a5%e5%af%bc%e5%87%ba%e9%95%9c%e5%83%8f" class="nav-5导入导出镜像">
+									5、导入导出镜像
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e5%88%86%e5%b1%82" class="nav-镜像分层">
+									镜像分层
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1%e9%95%9c%e5%83%8f%e5%b1%82%e6%9e%84%e6%88%90" class="nav-1镜像层构成">
+									1、镜像层构成
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e9%95%9c%e5%83%8f%e6%91%98%e8%a6%81" class="nav-镜像摘要">
+									镜像摘要
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%a4%9a%e6%9e%b6%e6%9e%84%e9%95%9c%e5%83%8f" class="nav-多架构镜像">
+									多架构镜像
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+        
+    </div>
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top"
+            :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+        <a type="button" class="pagination-action" id="darkModeToggleButton">
+            <span class="material-icons pagination-action-icon" id="darkModeToggleIcon">
+                dark_mode
+            </span>
+        </a>
+        
+        
+    </div>
+</div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://risehere.net/">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	This is a customized copyright.
+	
+</div>
+            </div>
+    
+    <script src="/localhost/js/journal.js"></script></body>
+</html>
