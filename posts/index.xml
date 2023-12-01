@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on My Site</title>
-    <link>localhost/posts/</link>
+    <link>https://Strke.github.io/posts/</link>
     <description>Recent content in Posts on My Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This is a customized copyright.</copyright>
     <lastBuildDate>Thu, 30 Nov 2023 19:48:08 -0400</lastBuildDate>
-    <atom:link href="localhost/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://Strke.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker数据持久化</title>
-      <link>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+      <link>https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>
       <pubDate>Thu, 30 Nov 2023 19:48:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+      <guid>https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
       <description>在容器层的 UnionFS(联合文件系统) 中对文件/目录的任何修改，无论是手工修改还是容器在运行过程中的修改，在该容器丢失或被删除后这些修改将全部丢失。即这些修改是无法保存下来的。若要保存下来这些修改，通常有两种方式:
 定制镜像持久化:将这个修改过的容器生成一个新的镜像，让这些修改变为只读的镜像. 数据卷持久化:将这些修改通过数据卷同步到宿主机 定制镜像持久化 docker commit -m=&amp;#34;xxxx&amp;#34; -a=&amp;#34;xxx&amp;#34; mytom tomcat10:own 使用docker commit将对容器的修改保存为镜像
 数据卷 Docker的三种同步方式（宿主机与容器文件系统间的数据同步）：
@@ -31,18 +31,18 @@ FROM centos:7VOLUME /opt/xx /opt/oooCMD /bin/bash </description>
     </item>
     <item>
       <title>Dockerfile</title>
-      <link>localhost/posts/dockerfile/</link>
+      <link>https://Strke.github.io/posts/dockerfile/</link>
       <pubDate>Thu, 23 Nov 2023 16:08:08 -0400</pubDate>
-      <guid>localhost/posts/dockerfile/</guid>
+      <guid>https://Strke.github.io/posts/dockerfile/</guid>
       <description>Dockerfile Dockerfile 是用于构建 Docker 镜像的脚本文件，由一系列指令构成。通过 docker build命令构建镜像时，Dockerfile 中的指令会由上到下依次执行，每条指令都将会构建出一个镜像。这就是镜像的分层。因此，指令越多，层次就越多，创建的镜像就越多，效率就越低，所以在定义 Dockerfile 时，能在一个指令完成的动作就不要分为两条。
 指令 大小写不敏感，惯例时全大写 指令后至少携带一个参数 #号开头为注释 CMD CMD [&amp;#34;EXECUTABLE&amp;#34;, &amp;#34;PARAM1&amp;#34;, &amp;#34;PARAM2&amp;#34;,...] # 执行EXECUTABLE可执行文件，后面的参数为运行参数 CMD command param1 param2,... # command是 shell命令 CMD [&amp;#34;PARAM1&amp;#34;, &amp;#34;PARAM2&amp;#34;,...] # 提供给ENTERYPOINT的默认参数 Dockerfile 中的[command]或[“EXECUTABLE”]如果是通过 CMD 指定的，则该镜像的启动命令 docker run 中是不能添加参数[ARG]的。因为 Dockerfile 中的 CMD 是可以被命令中的[COMMAND]替代的。如果命令中的 IMAGE 后仍有内容，此时对于 docker daemon 来说，其首先认为是替代用的[COMMAND]，如果有两个或两个以上的内容，后面的内容才会认为是[ARG]。所以，添加的-y 会报错，因为没有-y 这样的[COMMAND]。
 ENTRYPOINT ENTRYPOINT [&amp;#34;EXECUTABLE&amp;#34;, &amp;#34;PARAM1&amp;#34;, &amp;#34;PARAM2&amp;#34;,...] # 调用EXECUTABLE应用程序，后面是两个参数 ENTRYPOINT command param1 param2,... # command是shell命令 Dockerfile 中的[command]或[“EXECUTABLE”]如果是通过 ENTRYPOINT 指定的，则该镜像的启动命令 docker run 中是可以添加参数[ARG]的。因为 Dockerfile 中的 ENTRYPOINT 是不能被命令中的[COMMAND]替代的。如果命令中的IMAGE 后仍有内容，此时对于 docker daemon来说，其只能是[ARG]。</description>
     </item>
     <item>
       <title>Docker容器</title>
-      <link>localhost/posts/docker%E5%AE%B9%E5%99%A8/</link>
+      <link>https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/</link>
       <pubDate>Tue, 21 Nov 2023 21:23:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E5%AE%B9%E5%99%A8/</guid>
+      <guid>https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/</guid>
       <description>容器基础 1、容器启动流程 通过 docker run 命令可以启动运行一个容器。该命令在执行时首先会在本地查找指定的镜像，如果找到了，则直接启动，否则会到镜像中心查找。如果镜像中心存在该镜像，则会下载到本地并启动，如果镜像中心也没有，则直接报错。
 如果再与多架构镜像原理相整合，则就形成了完整的容器启动流程。
 2、容器运行本质 Docker 容器存在的意义就是为了运行容器中的应用，对外提供服务，所以启动容器的目的就是启动运行该容器中的应用。容器中的应用运行完毕后，容器就会自动终止。所以如果不想让容器启动后立即终止运行，则就需要使容器应用不能立即结束。通常采用的方式有两种，使应用处于与用户交互的状态或等待状态。
@@ -58,9 +58,9 @@ docker rm -f xxxx 9、把容器打包为镜像 docker commit -a &amp;#34;xx &amp
     </item>
     <item>
       <title>Docker镜像</title>
-      <link>localhost/posts/docker%E9%95%9C%E5%83%8F/</link>
+      <link>https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/</link>
       <pubDate>Mon, 20 Nov 2023 12:36:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E9%95%9C%E5%83%8F/</guid>
+      <guid>https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/</guid>
       <description>镜像定位 对于任何镜像，都可通过:进行唯一定位。其中一般称为镜像的版本号。中有一个比较特殊的版本&amp;ndash;latest。如果不指定，默认即为 latest。
 自动化镜像 AUTOMATED 表示当前镜像是否是“自动化镜像”什么是自动化镜像?就是使用 DockerHub 连接一个包含 Dockerfile 文件(专门构建镜像用的文件)的 GitHub 仓库或 Bitbucket 仓库的源码托管平台，然后 Docker Hub 就会自动根据 Dockerfile 内容构建镜像。这种构建出的镜像会被标记为AUTOMATED,这种构建镜像的方式称为 Trusted Build(受信构建)。只要 Dockerfile文件内容发生变化，那么 Docker Hub 就会构建出新的镜像。
 镜像操作 1、docker pull 2、docker images 3、 docker search ​	通过docker search可以从docker hub上查看指定名称的镜像
@@ -72,18 +72,18 @@ docker rm -f xxxx 9、把容器打包为镜像 docker commit -a &amp;#34;xx &amp
     </item>
     <item>
       <title>Docker概述</title>
-      <link>localhost/posts/docker%E6%A6%82%E8%BF%B0/</link>
+      <link>https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/</link>
       <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E6%A6%82%E8%BF%B0/</guid>
+      <guid>https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/</guid>
       <description>DevOps DevOps是一种执行标准（思想），主要用于促进开发、测试与运维的整合
 容器与虚拟机的区别 最大的区别是，虚拟机中存在独立的硬件系统与操作系统，容器中全部是共享的宿主机中的操作系统与硬件系统
 Windows系统的虚拟化 </description>
     </item>
     <item>
       <title>Docker引擎</title>
-      <link>localhost/posts/docker%E5%BC%95%E6%93%8E/</link>
+      <link>https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/</link>
       <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E5%BC%95%E6%93%8E/</guid>
+      <guid>https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/</guid>
       <description>Docker引擎架构 Docker 引擎是用来运行和管理容器的核心软件，其现代架构由四部分主要组件构成:Docker Client，Dockerd、Containerd 与 Runc。
 Docker Client Docker 客户端，Docker 引擎提供的 CLI工具，用于用户向 Docker 提交命令请求。
 Dockerd Dockerd，即 Docker Daemon。在现代 Dockerd 中的主要包含的功能有镜像构建、镜像管理、RESTAPI、核心网络及编排等。其通过gRPC与 Containerd 进行通信。
@@ -95,33 +95,33 @@ Shim Shim 是实现“Daemonless Container”不可或缺的工具，使容器�
     </item>
     <item>
       <title>golang---5</title>
-      <link>localhost/posts/golang--5/</link>
+      <link>https://Strke.github.io/posts/golang--5/</link>
       <pubDate>Wed, 15 Nov 2023 20:23:08 -0400</pubDate>
-      <guid>localhost/posts/golang--5/</guid>
+      <guid>https://Strke.github.io/posts/golang--5/</guid>
       <description>映射 map内部无序 map初始化 // [key]value var a map[int]string //声明不会分配空间，必须用make初始化来分配空间 a = make(map[int]string, 10)//存放10个键值对，不传size大小默认分配一个 b := make(map[int]string) c := map[int]string{ 3425:&amp;#34;dff&amp;#34;, } map操作 //增加 map[&amp;#34;key&amp;#34;] = value //删除 delete(map, &amp;#34;key&amp;#34;) //查找 value, bool = map[key] //遍历 for k,v := range b{ } //二重map a := make(map[string]map[int]string) a[&amp;#34;11&amp;#34;] = make(map[int]string) a[&amp;#34;11&amp;#34;][1] = &amp;#34;xx&amp;#34; a[&amp;#34;22&amp;#34;] = make(map[int]string) a[&amp;#34;22&amp;#34;][1] = &amp;#34;tt&amp;#34; 面向对象 golang基于结构体实现OOP特性
 定义 type Teacher struct { Name string Age int School string } //初始化 func main(){ //第一种赋值方式 var x Teacher x.</description>
     </item>
     <item>
       <title>golang---4</title>
-      <link>localhost/posts/golang--4/</link>
+      <link>https://Strke.github.io/posts/golang--4/</link>
       <pubDate>Tue, 14 Nov 2023 21:26:08 -0400</pubDate>
-      <guid>localhost/posts/golang--4/</guid>
+      <guid>https://Strke.github.io/posts/golang--4/</guid>
       <description>数组 //定义： var a [5]int //遍历(普通for循环) for i := 0; i &amp;lt; len(a); i ++{} //遍历（键值循环） for key, val := range a{} //初始化 //第一种 var a[3]int = [3]int{1, 2, 3} //第二种 var a = [3]int{1, 2, 3} //第三种 var a = [...]int{1, 2, 3, 4} //第四种 var a = [...]int{2:66, 0:22, 1:66, 3:54} 长度属于类型的一部分 Go数组是值类型，拷贝或者传参时默认值传递 //默认初始化为全0 var arr [2][3]int16 //初始化操作 var arr1 [2][3]int = [2][3]int{{1, 2, 3},{4, 5, 6}} //遍历 //方式1：普通for循环 for i := 0; i &amp;lt; len(arr); i ++{ for j:= 0; j &amp;lt; len(arr[i]); i ++{ } } //方式2：键值循环 for key, value := range arr{ for k,v := range value{ } } 切片 //定义切片方式1 var intarr [6]int = [6]int{1, 2, 3, 4, 5, 6} //索引：从1开始，到3结束（不包含3） var slice []int = intarr[1:3] //定义切片方式2：, 参数表示，1、切片类型，2、切片长度，3、切片容量 slice := make([]int, 4, 20) //定义切片方式3：指定具体数组 slice2 := []int{1, 2, 3} //切片遍历 //方式1：普通for循环 for i := 0; i &amp;lt; len(slice); i ++{ } //方式2：键值循环 for key, value := range slice{ } 切片底层由三部分组成：一个指向底层数组的指针，一个切片的长度，一个切片的容量</description>
     </item>
     <item>
       <title>golang---3</title>
-      <link>localhost/posts/golang--3/</link>
+      <link>https://Strke.github.io/posts/golang--3/</link>
       <pubDate>Mon, 13 Nov 2023 21:26:08 -0400</pubDate>
-      <guid>localhost/posts/golang--3/</guid>
+      <guid>https://Strke.github.io/posts/golang--3/</guid>
       <description>包 导入包时，要把包的所在文件路径import进来 一个目录下的同级文件同属于一个包 对包起别名后，原名字失效 import( test &amp;#34;fmt&amp;#34; ) //这里用test给fmt起别名，在下面的程序中也就只能使用test init函数 初始化函数，每个源文件都能包含init函数，在main函数之前，被GO运行框架调用 执行顺序：全局变量定义 &amp;gt; init函数 &amp;gt; main函数 多个源文件都有init函数，则按照main.go中的import顺序来执行 匿名函数 使用场景：只用一次（也可以多次使用（给全局变量），但不常用这种方式） result := func(num1 int, num2, int) int{ return num1 + num2 }(10, 20) 闭包 //getsum参数为空 func getsum() func(int) int{ var sum int = 0 return func(num int) int{ sum += num return sum } } //闭包：返回的匿名函数 + 匿名函数以外的变量num 本质依旧是一个匿名函数，只是这个匿名函数引入外界的变量或者参数 特点： 闭包中使用的变量会一直保存在内存中，所以闭包不可以滥用 什么情况下使用闭包 ​	闭包可以保留上次引用的某个值，我们传入一次就可以反复使用
 defer 为了在函数执行完毕后及时释放资源
 func add(num1 int, num2 int) int{ //golang中遇到defer，会将defer中的语句压入栈，然后继续执行后面的语句 defer fmt.</description>
     </item>
     <item>
       <title>golang---2</title>
-      <link>localhost/posts/golang--2/</link>
+      <link>https://Strke.github.io/posts/golang--2/</link>
       <pubDate>Wed, 08 Nov 2023 20:07:08 -0400</pubDate>
-      <guid>localhost/posts/golang--2/</guid>
+      <guid>https://Strke.github.io/posts/golang--2/</guid>
       <description>字符串 没有特殊字符
 使用双引号
 有特殊字符
@@ -133,9 +133,9 @@ func test(args...int){} //可以传入任意多个int类型的数据a Go中，�
     </item>
     <item>
       <title>golang---1</title>
-      <link>localhost/posts/golang--1/</link>
+      <link>https://Strke.github.io/posts/golang--1/</link>
       <pubDate>Tue, 07 Nov 2023 13:48:08 -0400</pubDate>
-      <guid>localhost/posts/golang--1/</guid>
+      <guid>https://Strke.github.io/posts/golang--1/</guid>
       <description>风格 1、行注释
 2、一行不超过80个字符，使用逗号换行
 变量和数据类型 1、定义变量 ​	1、var age int = 18
@@ -155,16 +155,16 @@ fmt.printf(&amp;quot;%c&amp;quot;, x)</description>
     </item>
     <item>
       <title>Chapter VI: Esmeralda</title>
-      <link>localhost/posts/chapter-6/</link>
+      <link>https://Strke.github.io/posts/chapter-6/</link>
       <pubDate>Fri, 14 Apr 2017 11:25:05 -0400</pubDate>
-      <guid>localhost/posts/chapter-6/</guid>
+      <guid>https://Strke.github.io/posts/chapter-6/</guid>
       <description>We are delighted to be able to inform the reader, that during the whole of this scene, Gringoire and his piece had stood firm. His actors, spurred on by him, had not ceased to spout his comedy, and he had not ceased to listen to it. He had made up his mind about the tumult, and was determined to proceed to the end, not giving up the hope of a return of attention on the part of the public.</description>
     </item>
     <item>
       <title>Chapter I: The Grand Hall</title>
-      <link>localhost/posts/chapter-1/</link>
+      <link>https://Strke.github.io/posts/chapter-1/</link>
       <pubDate>Sun, 09 Apr 2017 10:58:08 -0400</pubDate>
-      <guid>localhost/posts/chapter-1/</guid>
+      <guid>https://Strke.github.io/posts/chapter-1/</guid>
       <description>Three hundred and forty-eight years, six months, and nineteen days ago to-day, the Parisians awoke to the sound of all the bells in the triple circuit of the city, the university, and the town ringing a full peal.
 The sixth of January, 1482, is not, however, a day of which history has preserved the memory. There was nothing notable in the event which thus set the bells and the bourgeois of Paris in a ferment from early morning.</description>
     </item>

@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>docker on My Site</title>
-    <link>localhost/categories/docker/</link>
+    <link>https://Strke.github.io/categories/docker/</link>
     <description>Recent content in docker on My Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This is a customized copyright.</copyright>
     <lastBuildDate>Thu, 30 Nov 2023 19:48:08 -0400</lastBuildDate>
-    <atom:link href="localhost/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://Strke.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Docker数据持久化</title>
-      <link>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+      <link>https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>
       <pubDate>Thu, 30 Nov 2023 19:48:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+      <guid>https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
       <description>在容器层的 UnionFS(联合文件系统) 中对文件/目录的任何修改，无论是手工修改还是容器在运行过程中的修改，在该容器丢失或被删除后这些修改将全部丢失。即这些修改是无法保存下来的。若要保存下来这些修改，通常有两种方式:
 定制镜像持久化:将这个修改过的容器生成一个新的镜像，让这些修改变为只读的镜像. 数据卷持久化:将这些修改通过数据卷同步到宿主机 定制镜像持久化 docker commit -m=&amp;#34;xxxx&amp;#34; -a=&amp;#34;xxx&amp;#34; mytom tomcat10:own 使用docker commit将对容器的修改保存为镜像
 数据卷 Docker的三种同步方式（宿主机与容器文件系统间的数据同步）：
@@ -31,18 +31,18 @@ FROM centos:7VOLUME /opt/xx /opt/oooCMD /bin/bash </description>
     </item>
     <item>
       <title>Dockerfile</title>
-      <link>localhost/posts/dockerfile/</link>
+      <link>https://Strke.github.io/posts/dockerfile/</link>
       <pubDate>Thu, 23 Nov 2023 16:08:08 -0400</pubDate>
-      <guid>localhost/posts/dockerfile/</guid>
+      <guid>https://Strke.github.io/posts/dockerfile/</guid>
       <description>Dockerfile Dockerfile 是用于构建 Docker 镜像的脚本文件，由一系列指令构成。通过 docker build命令构建镜像时，Dockerfile 中的指令会由上到下依次执行，每条指令都将会构建出一个镜像。这就是镜像的分层。因此，指令越多，层次就越多，创建的镜像就越多，效率就越低，所以在定义 Dockerfile 时，能在一个指令完成的动作就不要分为两条。
 指令 大小写不敏感，惯例时全大写 指令后至少携带一个参数 #号开头为注释 CMD CMD [&amp;#34;EXECUTABLE&amp;#34;, &amp;#34;PARAM1&amp;#34;, &amp;#34;PARAM2&amp;#34;,...] # 执行EXECUTABLE可执行文件，后面的参数为运行参数 CMD command param1 param2,... # command是 shell命令 CMD [&amp;#34;PARAM1&amp;#34;, &amp;#34;PARAM2&amp;#34;,...] # 提供给ENTERYPOINT的默认参数 Dockerfile 中的[command]或[“EXECUTABLE”]如果是通过 CMD 指定的，则该镜像的启动命令 docker run 中是不能添加参数[ARG]的。因为 Dockerfile 中的 CMD 是可以被命令中的[COMMAND]替代的。如果命令中的 IMAGE 后仍有内容，此时对于 docker daemon 来说，其首先认为是替代用的[COMMAND]，如果有两个或两个以上的内容，后面的内容才会认为是[ARG]。所以，添加的-y 会报错，因为没有-y 这样的[COMMAND]。
 ENTRYPOINT ENTRYPOINT [&amp;#34;EXECUTABLE&amp;#34;, &amp;#34;PARAM1&amp;#34;, &amp;#34;PARAM2&amp;#34;,...] # 调用EXECUTABLE应用程序，后面是两个参数 ENTRYPOINT command param1 param2,... # command是shell命令 Dockerfile 中的[command]或[“EXECUTABLE”]如果是通过 ENTRYPOINT 指定的，则该镜像的启动命令 docker run 中是可以添加参数[ARG]的。因为 Dockerfile 中的 ENTRYPOINT 是不能被命令中的[COMMAND]替代的。如果命令中的IMAGE 后仍有内容，此时对于 docker daemon来说，其只能是[ARG]。</description>
     </item>
     <item>
       <title>Docker容器</title>
-      <link>localhost/posts/docker%E5%AE%B9%E5%99%A8/</link>
+      <link>https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/</link>
       <pubDate>Tue, 21 Nov 2023 21:23:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E5%AE%B9%E5%99%A8/</guid>
+      <guid>https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/</guid>
       <description>容器基础 1、容器启动流程 通过 docker run 命令可以启动运行一个容器。该命令在执行时首先会在本地查找指定的镜像，如果找到了，则直接启动，否则会到镜像中心查找。如果镜像中心存在该镜像，则会下载到本地并启动，如果镜像中心也没有，则直接报错。
 如果再与多架构镜像原理相整合，则就形成了完整的容器启动流程。
 2、容器运行本质 Docker 容器存在的意义就是为了运行容器中的应用，对外提供服务，所以启动容器的目的就是启动运行该容器中的应用。容器中的应用运行完毕后，容器就会自动终止。所以如果不想让容器启动后立即终止运行，则就需要使容器应用不能立即结束。通常采用的方式有两种，使应用处于与用户交互的状态或等待状态。
@@ -58,9 +58,9 @@ docker rm -f xxxx 9、把容器打包为镜像 docker commit -a &amp;#34;xx &amp
     </item>
     <item>
       <title>Docker镜像</title>
-      <link>localhost/posts/docker%E9%95%9C%E5%83%8F/</link>
+      <link>https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/</link>
       <pubDate>Mon, 20 Nov 2023 12:36:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E9%95%9C%E5%83%8F/</guid>
+      <guid>https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/</guid>
       <description>镜像定位 对于任何镜像，都可通过:进行唯一定位。其中一般称为镜像的版本号。中有一个比较特殊的版本&amp;ndash;latest。如果不指定，默认即为 latest。
 自动化镜像 AUTOMATED 表示当前镜像是否是“自动化镜像”什么是自动化镜像?就是使用 DockerHub 连接一个包含 Dockerfile 文件(专门构建镜像用的文件)的 GitHub 仓库或 Bitbucket 仓库的源码托管平台，然后 Docker Hub 就会自动根据 Dockerfile 内容构建镜像。这种构建出的镜像会被标记为AUTOMATED,这种构建镜像的方式称为 Trusted Build(受信构建)。只要 Dockerfile文件内容发生变化，那么 Docker Hub 就会构建出新的镜像。
 镜像操作 1、docker pull 2、docker images 3、 docker search ​	通过docker search可以从docker hub上查看指定名称的镜像
@@ -72,18 +72,18 @@ docker rm -f xxxx 9、把容器打包为镜像 docker commit -a &amp;#34;xx &amp
     </item>
     <item>
       <title>Docker概述</title>
-      <link>localhost/posts/docker%E6%A6%82%E8%BF%B0/</link>
+      <link>https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/</link>
       <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E6%A6%82%E8%BF%B0/</guid>
+      <guid>https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/</guid>
       <description>DevOps DevOps是一种执行标准（思想），主要用于促进开发、测试与运维的整合
 容器与虚拟机的区别 最大的区别是，虚拟机中存在独立的硬件系统与操作系统，容器中全部是共享的宿主机中的操作系统与硬件系统
 Windows系统的虚拟化 </description>
     </item>
     <item>
       <title>Docker引擎</title>
-      <link>localhost/posts/docker%E5%BC%95%E6%93%8E/</link>
+      <link>https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/</link>
       <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
-      <guid>localhost/posts/docker%E5%BC%95%E6%93%8E/</guid>
+      <guid>https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/</guid>
       <description>Docker引擎架构 Docker 引擎是用来运行和管理容器的核心软件，其现代架构由四部分主要组件构成:Docker Client，Dockerd、Containerd 与 Runc。
 Docker Client Docker 客户端，Docker 引擎提供的 CLI工具，用于用户向 Docker 提交命令请求。
 Dockerd Dockerd，即 Docker Daemon。在现代 Dockerd 中的主要包含的功能有镜像构建、镜像管理、RESTAPI、核心网络及编排等。其通过gRPC与 Containerd 进行通信。

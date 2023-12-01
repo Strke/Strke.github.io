@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>My Site</title>
-    <link>localhost/</link>
+    <link>https://Strke.github.io/</link>
     <description>Recent content on My Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This is a customized copyright.</copyright>
     <lastBuildDate>Thu, 30 Nov 2023 19:48:08 -0400</lastBuildDate>
     
-        <atom:link href="localhost/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://Strke.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     
         <item>
         <title>golang---1</title>
-        <link>localhost/posts/golang--1/</link>
+        <link>https://Strke.github.io/posts/golang--1/</link>
         <pubDate>Tue, 07 Nov 2023 13:48:08 -0400</pubDate>
         
-        <guid>localhost/posts/golang--1/</guid>
-        <description>My Site localhost/posts/golang--1/ -&lt;h2 id=&#34;风格&#34;&gt;风格&lt;/h2&gt;
+        <guid>https://Strke.github.io/posts/golang--1/</guid>
+        <description>My Site https://Strke.github.io/posts/golang--1/ -&lt;h2 id=&#34;风格&#34;&gt;风格&lt;/h2&gt;
 &lt;p&gt;1、行注释&lt;/p&gt;
 &lt;p&gt;2、一行不超过80个字符，使用逗号换行&lt;/p&gt;
 &lt;h2 id=&#34;变量和数据类型&#34;&gt;变量和数据类型&lt;/h2&gt;
@@ -39,18 +39,18 @@
 &lt;p&gt;其底层按照Unicode码存储，ASCII码是Unicode码的前几位&lt;/p&gt;
 &lt;p&gt;要显示字符，要格式化输出&lt;/p&gt;
 &lt;p&gt;fmt.printf(&amp;quot;%c&amp;quot;, x)&lt;/p&gt;
-- localhost/posts/golang--1/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/golang--1/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>Chapter VI: Esmeralda</title>
-        <link>localhost/posts/chapter-6/</link>
+        <link>https://Strke.github.io/posts/chapter-6/</link>
         <pubDate>Fri, 14 Apr 2017 11:25:05 -0400</pubDate>
         
-        <guid>localhost/posts/chapter-6/</guid>
-        <description>My Site localhost/posts/chapter-6/ -&lt;p&gt;We are delighted to be able to inform the reader, that during the whole of
+        <guid>https://Strke.github.io/posts/chapter-6/</guid>
+        <description>My Site https://Strke.github.io/posts/chapter-6/ -&lt;p&gt;We are delighted to be able to inform the reader, that during the whole of
 this scene, Gringoire and his piece had stood firm. His actors, spurred on
 by him, had not ceased to spout his comedy, and he had not ceased to
 listen to it. He had made up his mind about the tumult, and was determined
@@ -119,18 +119,18 @@ an apothecary! It is true that Homerus begged through the Greek towns, and
 that Naso died in exile among the Muscovites. But may the devil flay me if
 I understand what they mean with their Esmeralda! What is that word, in
 the first place?—‘tis Egyptian!”&lt;/p&gt;
-- localhost/posts/chapter-6/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/chapter-6/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>Chapter I: The Grand Hall</title>
-        <link>localhost/posts/chapter-1/</link>
+        <link>https://Strke.github.io/posts/chapter-1/</link>
         <pubDate>Sun, 09 Apr 2017 10:58:08 -0400</pubDate>
         
-        <guid>localhost/posts/chapter-1/</guid>
-        <description>My Site localhost/posts/chapter-1/ -&lt;p&gt;Three hundred and forty-eight years, six months, and nineteen days ago
+        <guid>https://Strke.github.io/posts/chapter-1/</guid>
+        <description>My Site https://Strke.github.io/posts/chapter-1/ -&lt;p&gt;Three hundred and forty-eight years, six months, and nineteen days ago
 to-day, the Parisians awoke to the sound of all the bells in the triple
 circuit of the city, the university, and the town ringing a full peal.&lt;/p&gt;
 &lt;p&gt;The sixth of January, 1482, is not, however, a day of which history has
@@ -196,7 +196,7 @@ buffet of an archer, or the horse of one of the provost’s sergeants, which
 kicked to restore order; an admirable tradition which the provostship has
 bequeathed to the constablery, the constablery to the &lt;em&gt;maréchaussée&lt;/em&gt;,
 the &lt;em&gt;maréchaussée&lt;/em&gt; to our &lt;em&gt;gendarmeri&lt;/em&gt; of Paris.&lt;/p&gt;
-- localhost/posts/chapter-1/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/chapter-1/ - This is a customized copyright.</description>
         </item>
     
     

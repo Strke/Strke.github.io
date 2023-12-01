@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>My Site</title>
-    <link>localhost/</link>
+    <link>https://Strke.github.io/</link>
     <description>Recent content on My Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This is a customized copyright.</copyright>
     <lastBuildDate>Thu, 30 Nov 2023 19:48:08 -0400</lastBuildDate>
     
-        <atom:link href="localhost/index.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="https://Strke.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     
         <item>
         <title>Docker数据持久化</title>
-        <link>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+        <link>https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>
         <pubDate>Thu, 30 Nov 2023 19:48:08 -0400</pubDate>
         
-        <guid>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
-        <description>My Site localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/ -&lt;p&gt;在容器层的 UnionFS(联合文件系统) 中对文件/目录的任何修改，无论是手工修改还是容器在运行过程中的修改，在该容器丢失或被删除后这些修改将全部丢失。即这些修改是无法保存下来的。若要保存下来这些修改，通常有两种方式:&lt;/p&gt;
+        <guid>https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+        <description>My Site https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/ -&lt;p&gt;在容器层的 UnionFS(联合文件系统) 中对文件/目录的任何修改，无论是手工修改还是容器在运行过程中的修改，在该容器丢失或被删除后这些修改将全部丢失。即这些修改是无法保存下来的。若要保存下来这些修改，通常有两种方式:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;定制镜像持久化:将这个修改过的容器生成一个新的镜像，让这些修改变为只读的镜像.&lt;/li&gt;
 &lt;li&gt;数据卷持久化:将这些修改通过数据卷同步到宿主机&lt;/li&gt;
@@ -66,18 +66,18 @@
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-Docke&#34; data-lang=&#34;Docke&#34;&gt;FROM centos:7
 VOLUME /opt/xx /opt/ooo
 CMD /bin/bash
-&lt;/code&gt;&lt;/pre&gt;- localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/ - This is a customized copyright.</description>
+&lt;/code&gt;&lt;/pre&gt;- https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>Dockerfile</title>
-        <link>localhost/posts/dockerfile/</link>
+        <link>https://Strke.github.io/posts/dockerfile/</link>
         <pubDate>Thu, 23 Nov 2023 16:08:08 -0400</pubDate>
         
-        <guid>localhost/posts/dockerfile/</guid>
-        <description>My Site localhost/posts/dockerfile/ -&lt;h2 id=&#34;dockerfile&#34;&gt;Dockerfile&lt;/h2&gt;
+        <guid>https://Strke.github.io/posts/dockerfile/</guid>
+        <description>My Site https://Strke.github.io/posts/dockerfile/ -&lt;h2 id=&#34;dockerfile&#34;&gt;Dockerfile&lt;/h2&gt;
 &lt;p&gt;Dockerfile 是用于构建 Docker 镜像的脚本文件，由一系列指令构成。通过 docker build命令构建镜像时，Dockerfile 中的指令会由上到下依次执行，每条指令都将会构建出一个镜像。这就是镜像的分层。因此，指令越多，层次就越多，创建的镜像就越多，效率就越低，所以在定义 Dockerfile 时，能在一个指令完成的动作就不要分为两条。&lt;/p&gt;
 &lt;h2 id=&#34;指令&#34;&gt;指令&lt;/h2&gt;
 &lt;ul&gt;
@@ -169,18 +169,18 @@ CMD /bin/bash
 &lt;h3 id=&#34;清理悬虚build-cache&#34;&gt;清理悬虚build cache&lt;/h3&gt;
 &lt;p&gt;指无法使用的build  cache，一般是悬虚镜像产生的build cache。&lt;/p&gt;
 &lt;p&gt;通过docker system prune 清除&lt;/p&gt;
-- localhost/posts/dockerfile/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/dockerfile/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>Docker容器</title>
-        <link>localhost/posts/docker%E5%AE%B9%E5%99%A8/</link>
+        <link>https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/</link>
         <pubDate>Tue, 21 Nov 2023 21:23:08 -0400</pubDate>
         
-        <guid>localhost/posts/docker%E5%AE%B9%E5%99%A8/</guid>
-        <description>My Site localhost/posts/docker%E5%AE%B9%E5%99%A8/ -&lt;h2 id=&#34;容器基础&#34;&gt;容器基础&lt;/h2&gt;
+        <guid>https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/</guid>
+        <description>My Site https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/ -&lt;h2 id=&#34;容器基础&#34;&gt;容器基础&lt;/h2&gt;
 &lt;h3 id=&#34;1容器启动流程&#34;&gt;1、容器启动流程&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231121190107.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;通过 docker run 命令可以启动运行一个容器。该命令在执行时首先会在本地查找指定的镜像，如果找到了，则直接启动，否则会到镜像中心查找。如果镜像中心存在该镜像，则会下载到本地并启动，如果镜像中心也没有，则直接报错。&lt;/p&gt;
@@ -255,18 +255,18 @@ CMD /bin/bash
 &lt;/ul&gt;
 &lt;p&gt;相同点: docker export + docker import 会将一个容器变为一个镜像，docker commit 也可以将一个容器变一个镜像。“
 不同点: docker export + docker import 恢复的镜像仅包含原容器生成的一层分层,docker commit 生成的镜像中包含容器的原镜像的所有分层信息。&lt;/p&gt;
-- localhost/posts/docker%E5%AE%B9%E5%99%A8/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/docker%E5%AE%B9%E5%99%A8/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>Docker镜像</title>
-        <link>localhost/posts/docker%E9%95%9C%E5%83%8F/</link>
+        <link>https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/</link>
         <pubDate>Mon, 20 Nov 2023 12:36:08 -0400</pubDate>
         
-        <guid>localhost/posts/docker%E9%95%9C%E5%83%8F/</guid>
-        <description>My Site localhost/posts/docker%E9%95%9C%E5%83%8F/ -&lt;h2 id=&#34;镜像定位&#34;&gt;镜像定位&lt;/h2&gt;
+        <guid>https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/</guid>
+        <description>My Site https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/ -&lt;h2 id=&#34;镜像定位&#34;&gt;镜像定位&lt;/h2&gt;
 &lt;p&gt;对于任何镜像，都可通过&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;进行唯一定位。其中&lt;!-- raw HTML omitted --&gt;一般称为镜像的版本号。&lt;!-- raw HTML omitted --&gt;中有一个比较特殊的版本&amp;ndash;latest。如果不指定，默认&lt;!-- raw HTML omitted --&gt;即为 latest。&lt;/p&gt;
 &lt;h4 id=&#34;自动化镜像&#34;&gt;自动化镜像&lt;/h4&gt;
 &lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231120101446.png&#34; alt=&#34;微信图片_20231120101446&#34;&gt;&lt;/p&gt;
@@ -319,37 +319,37 @@ docker load -i my.tar
 &lt;h2 id=&#34;多架构镜像&#34;&gt;多架构镜像&lt;/h2&gt;
 &lt;p&gt;多架构镜像，是某&lt;!-- raw HTML omitted --&gt;中的某&lt;!-- raw HTML omitted --&gt;镜像针对不同操作系统/系统架构的不同镜像实现。即多架构镜像中包含的镜像的&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;都是相同的，但它们针对的操作系统/系统架构是不同的。&lt;/p&gt;
 &lt;p&gt;在 Docker Hub 中，镜像的多架构信息保存在 Manifest 文件中。在拉取镜像时，Docker会随着 pull 命令将当前 Docker 系统的 OS 与架构信息一并提交给 Docker Hub。Docker Hub 首先会根据镜像的&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;查找是否存在 Manifest。如果不存在，则直接查找并返回&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;镜像即可: 如果存在，则会在 Manifest 中查找是否存在指定系统/架构的镜像。如果存在该系统/架构，则根据 Manifest 中记录的地址找到该镜像的位置。&lt;/p&gt;
-- localhost/posts/docker%E9%95%9C%E5%83%8F/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/docker%E9%95%9C%E5%83%8F/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>Docker概述</title>
-        <link>localhost/posts/docker%E6%A6%82%E8%BF%B0/</link>
+        <link>https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/</link>
         <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
         
-        <guid>localhost/posts/docker%E6%A6%82%E8%BF%B0/</guid>
-        <description>My Site localhost/posts/docker%E6%A6%82%E8%BF%B0/ -&lt;h2 id=&#34;devops&#34;&gt;DevOps&lt;/h2&gt;
+        <guid>https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/</guid>
+        <description>My Site https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/ -&lt;h2 id=&#34;devops&#34;&gt;DevOps&lt;/h2&gt;
 &lt;p&gt;DevOps是一种执行标准（思想），主要用于促进开发、测试与运维的整合&lt;/p&gt;
 &lt;h2 id=&#34;容器与虚拟机的区别&#34;&gt;容器与虚拟机的区别&lt;/h2&gt;
 &lt;p&gt;最大的区别是，虚拟机中存在独立的硬件系统与操作系统，容器中全部是共享的宿主机中的操作系统与硬件系统&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;localhost/images//1.png&#34; alt=&#34;1&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://Strke.github.io/images//1.png&#34; alt=&#34;1&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C2.png&#34; alt=&#34;2&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;windows系统的虚拟化&#34;&gt;Windows系统的虚拟化&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C3.png&#34; alt=&#34;3&#34;&gt;&lt;/p&gt;
-- localhost/posts/docker%E6%A6%82%E8%BF%B0/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/docker%E6%A6%82%E8%BF%B0/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>Docker引擎</title>
-        <link>localhost/posts/docker%E5%BC%95%E6%93%8E/</link>
+        <link>https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/</link>
         <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
         
-        <guid>localhost/posts/docker%E5%BC%95%E6%93%8E/</guid>
-        <description>My Site localhost/posts/docker%E5%BC%95%E6%93%8E/ -&lt;h3 id=&#34;docker引擎架构&#34;&gt;Docker引擎架构&lt;/h3&gt;
+        <guid>https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/</guid>
+        <description>My Site https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/ -&lt;h3 id=&#34;docker引擎架构&#34;&gt;Docker引擎架构&lt;/h3&gt;
 &lt;p&gt;Docker 引擎是用来运行和管理容器的核心软件，其现代架构由四部分主要组件构成:Docker Client，Dockerd、Containerd 与 Runc。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Docker Client&lt;/li&gt;
@@ -375,18 +375,18 @@ docker load -i my.tar
 &lt;p&gt;​	1、保持所有 STDIN 与STDOUT 流的开启状态，从而使得当 Docker Daemon 重启时，容器不会因为 Pipe 的关闭而终止。&lt;/p&gt;
 &lt;p&gt;​	 2、将容器的退出状态反馈给 Docker Daemon。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C4.png&#34; alt=&#34;4&#34;&gt;&lt;/p&gt;
-- localhost/posts/docker%E5%BC%95%E6%93%8E/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/docker%E5%BC%95%E6%93%8E/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>golang---5</title>
-        <link>localhost/posts/golang--5/</link>
+        <link>https://Strke.github.io/posts/golang--5/</link>
         <pubDate>Wed, 15 Nov 2023 20:23:08 -0400</pubDate>
         
-        <guid>localhost/posts/golang--5/</guid>
-        <description>My Site localhost/posts/golang--5/ -&lt;h3 id=&#34;映射&#34;&gt;映射&lt;/h3&gt;
+        <guid>https://Strke.github.io/posts/golang--5/</guid>
+        <description>My Site https://Strke.github.io/posts/golang--5/ -&lt;h3 id=&#34;映射&#34;&gt;映射&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;map内部无序&lt;/li&gt;
 &lt;li&gt;map初始化&lt;/li&gt;
@@ -613,18 +613,18 @@ docker load -i my.tar
 &lt;ul&gt;
 &lt;li&gt;虽然有多重继承，但是不建议使用&lt;/li&gt;
 &lt;/ul&gt;
-- localhost/posts/golang--5/ - This is a customized copyright.</description>
+- https://Strke.github.io/posts/golang--5/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>golang---4</title>
-        <link>localhost/posts/golang--4/</link>
+        <link>https://Strke.github.io/posts/golang--4/</link>
         <pubDate>Tue, 14 Nov 2023 21:26:08 -0400</pubDate>
         
-        <guid>localhost/posts/golang--4/</guid>
-        <description>My Site localhost/posts/golang--4/ -&lt;h3 id=&#34;数组&#34;&gt;数组&lt;/h3&gt;
+        <guid>https://Strke.github.io/posts/golang--4/</guid>
+        <description>My Site https://Strke.github.io/posts/golang--4/ -&lt;h3 id=&#34;数组&#34;&gt;数组&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//定义：
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a [&lt;span style=&#34;color:#b452cd&#34;&gt;5&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//遍历(普通for循环)
@@ -701,18 +701,18 @@ docker load -i my.tar
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a[]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = []&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; b[]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;([]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#658b00&#34;&gt;copy&lt;/span&gt;(b, a)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- localhost/posts/golang--4/ - This is a customized copyright.</description>
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://Strke.github.io/posts/golang--4/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>golang---3</title>
-        <link>localhost/posts/golang--3/</link>
+        <link>https://Strke.github.io/posts/golang--3/</link>
         <pubDate>Mon, 13 Nov 2023 21:26:08 -0400</pubDate>
         
-        <guid>localhost/posts/golang--3/</guid>
-        <description>My Site localhost/posts/golang--3/ -&lt;h3 id=&#34;包&#34;&gt;包&lt;/h3&gt;
+        <guid>https://Strke.github.io/posts/golang--3/</guid>
+        <description>My Site https://Strke.github.io/posts/golang--3/ -&lt;h3 id=&#34;包&#34;&gt;包&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;导入包时，要把包的所在文件路径import进来&lt;/li&gt;
 &lt;li&gt;一个目录下的同级文件同属于一个包&lt;/li&gt;
@@ -854,18 +854,18 @@ docker load -i my.tar
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    num2 := &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    resulr := num1 / num2
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- localhost/posts/golang--3/ - This is a customized copyright.</description>
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://Strke.github.io/posts/golang--3/ - This is a customized copyright.</description>
         </item>
     
     
     
         <item>
         <title>golang---2</title>
-        <link>localhost/posts/golang--2/</link>
+        <link>https://Strke.github.io/posts/golang--2/</link>
         <pubDate>Wed, 08 Nov 2023 20:07:08 -0400</pubDate>
         
-        <guid>localhost/posts/golang--2/</guid>
-        <description>My Site localhost/posts/golang--2/ -&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
+        <guid>https://Strke.github.io/posts/golang--2/</guid>
+        <description>My Site https://Strke.github.io/posts/golang--2/ -&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;没有特殊字符&lt;/p&gt;
@@ -941,7 +941,7 @@ docker load -i my.tar
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;GetConn&lt;/span&gt;(){}  &lt;span style=&#34;color:#228b22&#34;&gt;//5、首字母大写，可以被其他包访问
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- localhost/posts/golang--2/ - This is a customized copyright.</description>
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://Strke.github.io/posts/golang--2/ - This is a customized copyright.</description>
         </item>
     
     
