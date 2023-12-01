@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html><head>
+<title></title>
+
+
+
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+<meta property="og:title" content="" />
+<meta property="og:description" content="映射 map内部无序 map初始化 // [key]value var a map[int]string //声明不会分配空间，必须用make初始化来分配空间 a = make(map[int]string, 10)//存放10个键值对，不传size大小默认分配一个 b := make(map[int]string) c := map[int]string{ 3425:&#34;dff&#34;, } map操作 //增加 map[&#34;key&#34;] = value //删除 delete(map, &#34;key&#34;) //查找 value, bool = map[key] //遍历 for k,v := range b{ } //二重map a := make(map[string]map[int]string) a[&#34;11&#34;] = make(map[int]string) a[&#34;11&#34;][1] = &#34;xx&#34; a[&#34;22&#34;] = make(map[int]string) a[&#34;22&#34;][1] = &#34;tt&#34; 面向对象 golang基于结构体实现OOP特性
+定义 type Teacher struct { Name string Age int School string } //初始化 func main(){ //第一种赋值方式 var x Teacher x." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="localhost/posts/dayfive/" /><meta property="article:section" content="posts" />
+
+<meta property="og:site_name" content="My Blog" />
+
+
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="映射 map内部无序 map初始化 // [key]value var a map[int]string //声明不会分配空间，必须用make初始化来分配空间 a = make(map[int]string, 10)//存放10个键值对，不传size大小默认分配一个 b := make(map[int]string) c := map[int]string{ 3425:&#34;dff&#34;, } map操作 //增加 map[&#34;key&#34;] = value //删除 delete(map, &#34;key&#34;) //查找 value, bool = map[key] //遍历 for k,v := range b{ } //二重map a := make(map[string]map[int]string) a[&#34;11&#34;] = make(map[int]string) a[&#34;11&#34;][1] = &#34;xx&#34; a[&#34;22&#34;] = make(map[int]string) a[&#34;22&#34;][1] = &#34;tt&#34; 面向对象 golang基于结构体实现OOP特性
+定义 type Teacher struct { Name string Age int School string } //初始化 func main(){ //第一种赋值方式 var x Teacher x."/>
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "abcdefghzd");
+</script>
+
+
+
+  
+
+
+
+
+
+
+      <script src="/localhost/js/toc.js"></script>
+    
+    <link type="text/css" rel="stylesheet" href="/localhost/vendor/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="/localhost/scss/dark-mode.min.cb53f1bee2b8900cb4f082afbf00175d6618f281cf9a2fe8619e3b52d20b5721.css" integrity="sha256-y1PxvuK4kAy08IKvvwAXXWYY8oHPmi/oYZ47UtILVyE=" media="screen">
+
+
+<link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Material+Icons">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>console.log("Hello from 'layouts/partials/extended_head.html'")</script>
+
+</head>
+<body>
+    	<div id="app"><div class="single-column-drawer-container" id="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="localhost/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="localhost/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="localhost/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="localhost/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e6%98%a0%e5%b0%84" class="nav-映射">
+									映射
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e9%9d%a2%e5%90%91%e5%af%b9%e8%b1%a1" class="nav-面向对象">
+									面向对象
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e5%b0%81%e8%a3%85" class="nav-封装">
+									封装
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e7%bb%a7%e6%89%bf" class="nav-继承">
+									继承
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div id="drawer-mask" v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav id="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div id="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a id="navTitle" class="navbar-brand" href="localhost">
+            A Hugo Site
+        </a>
+        
+        <button type="button" class="nav-darkmode-toggle" id="darkModeToggleButton2">
+            <i class="material-icons" id="darkModeToggleIcon2">
+                dark_mode
+            </i>
+        </button>
+        
+    </div>
+</nav>
+<div class="single-column-header-container" id="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="localhost">
+        <div class="single-column-header-title">A Hugo Site</div>
+        
+        <div class="single-column-header-subtitle">Themed by Diary.</div>
+        
+
+    </a>
+</div>
+
+            <div id="content">
+                <div id="streamContainer" class="stream-container">
+
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                
+            >
+                <div class="post-title">
+                    
+                    
+                    <div class="post-meta">
+                        
+
+                        
+
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                
+                <div class="post-body" v-pre>
+                
+                    <h3 id="映射">映射</h3>
+<ul>
+<li>map内部无序</li>
+<li>map初始化</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#228b22">//       [key]value
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">var</span> a <span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">int</span>]<span style="color:#00688b;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//声明不会分配空间，必须用make初始化来分配空间
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>a = <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">int</span>]<span style="color:#00688b;font-weight:bold">string</span>, <span style="color:#b452cd">10</span>)<span style="color:#228b22">//存放10个键值对，不传size大小默认分配一个
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>
+</span></span><span style="display:flex;"><span>b := <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">int</span>]<span style="color:#00688b;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>c := <span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">int</span>]<span style="color:#00688b;font-weight:bold">string</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#b452cd">3425</span>:<span style="color:#cd5555">&#34;dff&#34;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>map操作</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#228b22">//增加
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#cd5555">&#34;key&#34;</span>] = value
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//删除
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#658b00">delete</span>(<span style="color:#8b008b;font-weight:bold">map</span>, <span style="color:#cd5555">&#34;key&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//查找
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>value, <span style="color:#00688b;font-weight:bold">bool</span> = <span style="color:#8b008b;font-weight:bold">map</span>[key]
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//遍历
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">for</span> k,v := <span style="color:#8b008b;font-weight:bold">range</span> b{    
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//二重map
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>a := <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">string</span>]<span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">int</span>]<span style="color:#00688b;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>a[<span style="color:#cd5555">&#34;11&#34;</span>] = <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">int</span>]<span style="color:#00688b;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>a[<span style="color:#cd5555">&#34;11&#34;</span>][<span style="color:#b452cd">1</span>] = <span style="color:#cd5555">&#34;xx&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>a[<span style="color:#cd5555">&#34;22&#34;</span>] = <span style="color:#658b00">make</span>(<span style="color:#8b008b;font-weight:bold">map</span>[<span style="color:#00688b;font-weight:bold">int</span>]<span style="color:#00688b;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>a[<span style="color:#cd5555">&#34;22&#34;</span>][<span style="color:#b452cd">1</span>] = <span style="color:#cd5555">&#34;tt&#34;</span>
+</span></span></code></pre></div><h3 id="面向对象">面向对象</h3>
+<p>golang基于结构体实现OOP特性</p>
+<ul>
+<li>定义</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> Teacher <span style="color:#8b008b;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	Name <span style="color:#00688b;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>    Age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    School <span style="color:#00688b;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#228b22">//第一种赋值方式
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>    <span style="color:#8b008b;font-weight:bold">var</span> x Teacher
+</span></span><span style="display:flex;"><span>    x.Name = <span style="color:#cd5555">&#34;xx&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#228b22">//第二种赋值方式
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>    <span style="color:#8b008b;font-weight:bold">var</span> ma Teacher = Teacher{<span style="color:#cd5555">&#34;s&#34;</span>, <span style="color:#b452cd">23</span>, <span style="color:#cd5555">&#34;df&#34;</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#228b22">//第三种赋值方式
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>    <span style="color:#8b008b;font-weight:bold">var</span> t *Teacher = <span style="color:#658b00">new</span>(Teacher)
+</span></span><span style="display:flex;"><span>    *(t).Name = <span style="color:#cd5555">&#34;fd&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>结构体间转化</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> Student <span style="color:#8b008b;font-weight:bold">struct</span>{
+</span></span><span style="display:flex;"><span>    Age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> stu Student
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> Person <span style="color:#8b008b;font-weight:bold">struct</span>{
+</span></span><span style="display:flex;"><span>    Age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#8b008b;font-weight:bold">var</span> s Student = Student{<span style="color:#b452cd">10</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#8b008b;font-weight:bold">var</span> t Person = Person{<span style="color:#b452cd">10</span>}
+</span></span><span style="display:flex;"><span>    s = <span style="color:#008b45">Student</span>(t);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>    <span style="color:#228b22">//type起别名后也要强转
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>    <span style="color:#8b008b;font-weight:bold">var</span> ss stu = stu{<span style="color:#b452cd">10</span>}
+</span></span><span style="display:flex;"><span>    s = <span style="color:#008b45">Student</span>(ss)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>结构体的方法
+<ul>
+<li>方法名首字母大写，可以被其他包访问</li>
+<li>如果一个类型实现了String()方法，则fmt.Println默认调用这个变量的String()进行输出</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#228b22">//声明
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">type</span> A <span style="color:#8b008b;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>    Num <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> Person <span style="color:#8b008b;font-weight:bold">struct</span>{
+</span></span><span style="display:flex;"><span>    Age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//test和A结构体绑定，结构体对象传入为值传递
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> (a A) <span style="color:#008b45">test</span>(){
+</span></span><span style="display:flex;"><span>    fmt.<span style="color:#008b45">Println</span>(a.Num)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//将方法改为地址传递
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> (p *Person) <span style="color:#008b45">test1</span>(){
+</span></span><span style="display:flex;"><span>    (*p).Name = <span style="color:#cd5555">&#34;xx&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#8b008b;font-weight:bold">var</span> a A
+</span></span><span style="display:flex;"><span>    a.<span style="color:#008b45">test</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>函数和方法的区别</li>
+</ul>
+<p>主要看需不需要绑定指定类型</p>
+<p>对于函数来说，参数类型是什么就要传入什么</p>
+<p>对于方法来说，指针和值类型可以混用</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> Student <span style="color:#8b008b;font-weight:bold">struct</span>{
+</span></span><span style="display:flex;"><span>    Name  <span style="color:#00688b;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>    Age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//方法
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span>(s Student) test01{
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//函数
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">method01</span>(s Student){
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>跨包创建结构体实例</li>
+</ul>
+<p>如果结构体首字母大写的话，在其他包下可以访问</p>
+<p>如果结构体首字母小写的话，使用工厂模式也可以访问</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#228b22">//student.go 中
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">package</span> model
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> student <span style="color:#8b008b;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	Name <span style="color:#00688b;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>    Age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">NewStudent</span>(n <span style="color:#00688b;font-weight:bold">string</span>, a <span style="color:#00688b;font-weight:bold">int</span>) *student{
+</span></span><span style="display:flex;"><span>    <span style="color:#8b008b;font-weight:bold">return</span> &amp;student{n, a}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//main.go中
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#cd5555">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cd5555">&#34;model&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>(){
+</span></span><span style="display:flex;"><span>    s := model.<span style="color:#008b45">NewStudent</span>(<span style="color:#cd5555">&#34;xx&#34;</span>, <span style="color:#b452cd">22</span>)
+</span></span><span style="display:flex;"><span>    fmt.<span style="color:#008b45">Println</span>(*s)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="封装">封装</h4>
+<p>person.go</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">package</span> model
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#cd5555">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> person <span style="color:#8b008b;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	Name <span style="color:#00688b;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>	age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//定义工厂模式的函数，相当于构造函数
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">NewPerson</span>(name <span style="color:#00688b;font-weight:bold">string</span>) *person{
+</span></span><span style="display:flex;"><span>	<span style="color:#8b008b;font-weight:bold">return</span> &amp;person{
+</span></span><span style="display:flex;"><span>		Name : name,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#228b22">//定义set和get方法，对age进行封装
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span><span style="color:#8b008b;font-weight:bold">func</span> (p *person) <span style="color:#008b45">SetAge</span>(age <span style="color:#00688b;font-weight:bold">int</span>){
+</span></span><span style="display:flex;"><span>	<span style="color:#8b008b;font-weight:bold">if</span> age &gt; <span style="color:#b452cd">0</span> &amp;&amp; age &lt; <span style="color:#b452cd">150</span>{
+</span></span><span style="display:flex;"><span>		p.age = age 
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#8b008b;font-weight:bold">else</span>{
+</span></span><span style="display:flex;"><span>		fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;error&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> (p *person) <span style="color:#008b45">GetAge</span>(){
+</span></span><span style="display:flex;"><span>	<span style="color:#8b008b;font-weight:bold">return</span> p.age
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>main.go</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">import</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#cd5555">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#cd5555">&#34;demo12/model&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>(){
+</span></span><span style="display:flex;"><span>	p := model.<span style="color:#008b45">NewPerson</span>(<span style="color:#cd5555">&#34;xx&#34;</span>)
+</span></span><span style="display:flex;"><span>	p.<span style="color:#008b45">SetAge</span>(<span style="color:#b452cd">12</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="继承">继承</h4>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">package</span> main
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#cd5555">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> Animal <span style="color:#8b008b;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>	Age <span style="color:#00688b;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>	Weight <span style="color:#00688b;font-weight:bold">float32</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> (an *Animal) <span style="color:#008b45">Shot</span>(){
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;sssss&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> (an *Animal) <span style="color:#008b45">Show</span>(){
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;ddddd&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">type</span> Cat <span style="color:#8b008b;font-weight:bold">struct</span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#228b22">//将匿名结构体嵌入
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>	Animal 
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> (c *Cat) <span style="color:#008b45">Scratch</span>(){
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#008b45">Println</span>(<span style="color:#cd5555">&#34;qqq&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">func</span> <span style="color:#008b45">main</span>(){
+</span></span><span style="display:flex;"><span>	<span style="color:#228b22">//创建cat实例
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>	cat := &amp;Cat{}
+</span></span><span style="display:flex;"><span>	cat.Animal.Age = <span style="color:#b452cd">3</span> <span style="color:#228b22">//======&gt;cat.Age = 3
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>	cat.Animal.Weight = <span style="color:#b452cd">3.5</span> <span style="color:#228b22">//=&gt;cat.Weight = 3.5
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>	cat.Animal.<span style="color:#008b45">Shot</span>() <span style="color:#228b22">//=======&gt;cat.Shot()
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>	cat.Animal.<span style="color:#008b45">Show</span>() <span style="color:#228b22">//=======&gt;cat.Show()
+</span></span></span><span style="display:flex;"><span><span style="color:#228b22"></span>	cat.<span style="color:#008b45">Scratch</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>注意点：</p>
+<ul>
+<li>匿名结构体字段访问可以简化</li>
+</ul>
+<p>cat.Age会先去找结构体中是否有Age字段，有的话直接使用， 没有的话去找嵌入的结构体类型中的Age（赋值也是如此）</p>
+<ul>
+<li>虽然有多重继承，但是不建议使用</li>
+</ul>
+
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="localhost/posts/chapter-1/">
+			下回<br>Chapter I: The Grand Hall
+                </a>
+                
+                
+                
+                <a class="older-posts" href="localhost/posts/dayfour/">
+			上回<br>
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://giscus.app/client.js"
+        data-repo="username/repo"
+        data-repo-id="**************************"
+        data-category="General"
+        data-category-id="*********************"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+</script>
+
+            </div>
+        </div>
+    </div>
+
+
+                    </div>
+            </div><div id="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="localhost">
+    
+        <div class="nav-title">
+            A Hugo Site
+        </div>
+        
+        <div class="nav-subtitle">
+            Themed by Diary.
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="localhost/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="localhost/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="localhost/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="localhost/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://risehere.net/">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	This is a customized copyright.
+	
+
+    </div>
+    
+</div><div id="extraContainer" class="extra-container">
+    <div class="toc-wrapper">
+        
+
+        
+        <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e6%98%a0%e5%b0%84" class="nav-映射">
+									映射
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e9%9d%a2%e5%90%91%e5%af%b9%e8%b1%a1" class="nav-面向对象">
+									面向对象
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e5%b0%81%e8%a3%85" class="nav-封装">
+									封装
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e7%bb%a7%e6%89%bf" class="nav-继承">
+									继承
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+        
+    </div>
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top"
+            :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+        <a type="button" class="pagination-action" id="darkModeToggleButton">
+            <span class="material-icons pagination-action-icon" id="darkModeToggleIcon">
+                dark_mode
+            </span>
+        </a>
+        
+        
+    </div>
+</div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://risehere.net/">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	This is a customized copyright.
+	
+</div>
+            </div>
+    
+    <script src="/localhost/js/journal.js"></script></body>
+</html>

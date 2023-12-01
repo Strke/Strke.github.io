@@ -1,0 +1,949 @@
+<?xml-stylesheet href="/rss.xsl" type="text/xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>My Site</title>
+    <link>localhost/</link>
+    <description>Recent content on My Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This is a customized copyright.</copyright>
+    <lastBuildDate>Thu, 30 Nov 2023 19:48:08 -0400</lastBuildDate>
+    
+        <atom:link href="localhost/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Docker数据持久化</title>
+        <link>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+        <pubDate>Thu, 30 Nov 2023 19:48:08 -0400</pubDate>
+        
+        <guid>localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
+        <description>My Site localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/ -&lt;p&gt;在容器层的 UnionFS(联合文件系统) 中对文件/目录的任何修改，无论是手工修改还是容器在运行过程中的修改，在该容器丢失或被删除后这些修改将全部丢失。即这些修改是无法保存下来的。若要保存下来这些修改，通常有两种方式:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;定制镜像持久化:将这个修改过的容器生成一个新的镜像，让这些修改变为只读的镜像.&lt;/li&gt;
+&lt;li&gt;数据卷持久化:将这些修改通过数据卷同步到宿主机&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;定制镜像持久化&#34;&gt;定制镜像持久化&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker commit -m=&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xxxx&amp;#34;&lt;/span&gt; -a=&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xxx&amp;#34;&lt;/span&gt; mytom tomcat10:own&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用docker commit将对容器的修改保存为镜像&lt;/p&gt;
+&lt;h3 id=&#34;数据卷&#34;&gt;数据卷&lt;/h3&gt;
+&lt;p&gt;Docker的三种同步方式（宿主机与容器文件系统间的数据同步）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;数据卷&lt;/li&gt;
+&lt;li&gt;Bind mounts（绑定挂载）&lt;/li&gt;
+&lt;li&gt;tmpfs（临时文件系统）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;数据卷是宿主机中的一个特殊的文件/目录，这个文件/目录与容器中的另一个文件/目录进行了直接关联，在任何一端对文件/目录的写操作，在另一端都会同时发生相应变化。在宿主中的这个文件/目录就称为数据卷，而容器中的这个关联文件/目录则称为该数据卷在该容器中的挂载点。
+数据卷的设计目的就是为了实现数据持久化，其完全独立于容器的生命周期，属于宿主机文件系统，但不属于 UnionFS。因此，容器被删除时，不会删除其挂载的数据卷。&lt;/p&gt;
+&lt;p&gt;数据卷具有如下明显特性:“&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;数据卷在容器启动时初始化，如果容器启动后容器本身已经包含了数据，那么，这些数据会在容器启动后直接出现在数据卷中，反之亦然。&lt;/li&gt;
+&lt;li&gt;可以对数据卷或挂载点中的内容直接修改，修改后对方立即可看到&lt;/li&gt;
+&lt;li&gt;数据卷会一直存在，即使挂载数据卷的容器已经被删除“&lt;/li&gt;
+&lt;li&gt;数据卷可以在容器之间共享和重用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;创建读写数据卷&#34;&gt;创建读写数据卷&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;宿主机目录绝对路径&lt;/strong&gt;或者&lt;strong&gt;容器内目录绝对路径&lt;/strong&gt;不存在时，都会自动创建。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -it -v /宿主机目录绝对路径:/容器内目录绝对路径 镜像
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;创建只读数据卷&#34;&gt;创建只读数据卷&lt;/h4&gt;
+&lt;p&gt;为了防止容器在运行过程中修改文件，这时需要创建只读数据卷&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -it -v /宿主机目录绝对路径:/容器内目录绝对路径:ro 镜像
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;数据卷共享&#34;&gt;数据卷共享&lt;/h4&gt;
+&lt;p&gt;指的是两个容器使用相同的数据卷时&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -it --volumes-from[容器C] 镜像
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过这种方式创建的容器可以共享容器C挂载的数据卷。容器C也就是数据卷容器。&lt;/p&gt;
+&lt;h4 id=&#34;共享方式&#34;&gt;共享方式&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130062337.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;避免使用应用程序容器作为数据卷容器，使用数据卷容器可以避免以下问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;避免由于容器被删除而导致挂载到这个容器的容器无法使用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;dockerfile持久化&#34;&gt;Dockerfile持久化&lt;/h3&gt;
+&lt;p&gt;Dockerfile 持久化,其实就是通过使用 Dockerfile 的 VOLUME 指令指定数据卷方式实现的持久化。&lt;/p&gt;
+&lt;p&gt;VOLUME 指令今可以在容器中创建可以挂载数据卷的挂载点。其参数可以是字符串数组，也可以是使用空格隔开的多个纯字符串。例如，VOLUME[&amp;quot;/var/www”,&amp;quot;/etc/apache”] 或&lt;/p&gt;
+&lt;p&gt;VOLUME /var/www /etc/apache。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-Docke&#34; data-lang=&#34;Docke&#34;&gt;FROM centos:7
+VOLUME /opt/xx /opt/ooo
+CMD /bin/bash
+&lt;/code&gt;&lt;/pre&gt;- localhost/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Dockerfile</title>
+        <link>localhost/posts/dockerfile/</link>
+        <pubDate>Thu, 23 Nov 2023 16:08:08 -0400</pubDate>
+        
+        <guid>localhost/posts/dockerfile/</guid>
+        <description>My Site localhost/posts/dockerfile/ -&lt;h2 id=&#34;dockerfile&#34;&gt;Dockerfile&lt;/h2&gt;
+&lt;p&gt;Dockerfile 是用于构建 Docker 镜像的脚本文件，由一系列指令构成。通过 docker build命令构建镜像时，Dockerfile 中的指令会由上到下依次执行，每条指令都将会构建出一个镜像。这就是镜像的分层。因此，指令越多，层次就越多，创建的镜像就越多，效率就越低，所以在定义 Dockerfile 时，能在一个指令完成的动作就不要分为两条。&lt;/p&gt;
+&lt;h2 id=&#34;指令&#34;&gt;指令&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;大小写不敏感，惯例时全大写&lt;/li&gt;
+&lt;li&gt;指令后至少携带一个参数&lt;/li&gt;
+&lt;li&gt;#号开头为注释&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;cmd&#34;&gt;CMD&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;CMD&lt;/span&gt; [&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;EXECUTABLE&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;PARAM1&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;PARAM2&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;...&lt;/span&gt;]&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;# 执行EXECUTABLE可执行文件，后面的参数为运行参数&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;CMD&lt;/span&gt; &lt;span style=&#34;color:#658b00&#34;&gt;command&lt;/span&gt; param1 param2,...&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;# command是 shell命令&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;CMD&lt;/span&gt; [&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;PARAM1&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;PARAM2&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;...&lt;/span&gt;]&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;# 提供给ENTERYPOINT的默认参数&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dockerfile 中的[command]或[“EXECUTABLE”]如果是通过 CMD 指定的，则该镜像的启动命令 docker run 中是不能添加参数[ARG]的。因为 Dockerfile 中的 CMD 是可以被命令中的[COMMAND]替代的。如果命令中的 IMAGE 后仍有内容，此时对于 docker daemon 来说，其首先认为是替代用的[COMMAND]，如果有两个或两个以上的内容，后面的内容才会认为是[ARG]。所以，添加的-y 会报错，因为没有-y 这样的[COMMAND]。&lt;/p&gt;
+&lt;h4 id=&#34;entrypoint&#34;&gt;ENTRYPOINT&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;ENTRYPOINT&lt;/span&gt; [&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;EXECUTABLE&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;PARAM1&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;PARAM2&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;...&lt;/span&gt;]&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;# 调用EXECUTABLE应用程序，后面是两个参数&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;ENTRYPOINT&lt;/span&gt; &lt;span style=&#34;color:#658b00&#34;&gt;command&lt;/span&gt; param1 param2,...&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;# command是shell命令&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dockerfile 中的[command]或[“EXECUTABLE”]如果是通过 ENTRYPOINT 指定的，则该镜像的启动命令 docker run 中是可以添加参数[ARG]的。因为 Dockerfile 中的 ENTRYPOINT 是不能被命令中的[COMMAND]替代的。如果命令中的IMAGE 后仍有内容，此时对于 docker daemon来说，其只能是[ARG]。&lt;/p&gt;
+&lt;h4 id=&#34;cmd与entrypoint总结&#34;&gt;CMD与ENTRYPOINT总结&lt;/h4&gt;
+&lt;p&gt;不过，docker daemon 对于 ENTRYPOINT 指定的[command]与[“EXECUTABLE”]的处理方式是不同的。如果是[command]指定的 shell，daemon 会直接运行，而不会与 docker run 中的[ARG]进行拼接后运行:如果是“EXECUTABLE”指定的命令，daemon 则会先与docker run中的[ARG]进行拼接，然后再运行拼接后的结果。&lt;/p&gt;
+&lt;p&gt;无论是CMD还是ENTRYPOINT，使用[&amp;lsquo;EXECUTABLE&amp;rsquo;]方式的通用性会更强&lt;/p&gt;
+&lt;h4 id=&#34;add&#34;&gt;ADD&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;ADD&lt;/span&gt; &amp;lt;src&amp;gt; &amp;lt;dest&amp;gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;ADD&lt;/span&gt; [&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;&amp;lt;src&amp;gt;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;&amp;lt;dest&amp;gt;&amp;#34;&lt;/span&gt;]&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;该指令将复制当前宿主机中指定文件 src 到容器中的指定目录 dest 中。src 可以是宿主机中的绝对路径，也可以时相对路径。但相对路径是相对于 docker build 命令所指定的路径的。src 指定的文件可以是一个压缩文件，压缩文件复制到容器后会自动解压为目录;src 也可以是一个 URL，此时的 ADD 指令相当于 wget 命令; src 最好不要是目录，其会将该目录中所有内容复制到容器的指定目录中。dest 是一个绝对路径，其最后面的路径必须要加上斜杠，否则系统会将最后的目录名称当做是文件名的。&lt;/p&gt;
+&lt;h4 id=&#34;copy&#34;&gt;copy&lt;/h4&gt;
+&lt;p&gt;功能与ADD相同，但是src不能是URL，且当src为压缩文件时，复制到容器后不会自动解压。&lt;/p&gt;
+&lt;h2 id=&#34;dockerfile文件内容&#34;&gt;Dockerfile文件内容&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;FROM&lt;/span&gt;&lt;span style=&#34;color:#cd5555&#34;&gt; centos:7   # 基础镜像信息&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;MAINTAINER&lt;/span&gt;&lt;span style=&#34;color:#cd5555&#34;&gt; lin lin@qq.com   # 维护者信息&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;WORKDIR&lt;/span&gt;&lt;span style=&#34;color:#cd5555&#34;&gt; /usr   # 容器打开后默认进入的目录&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;WORKDIR&lt;/span&gt;&lt;span style=&#34;color:#cd5555&#34;&gt; local   # 后续的WORKDIR会基于之前的路径&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;RUN&lt;/span&gt; yum install -y wget vim net-tools   &lt;span style=&#34;color:#228b22&#34;&gt;# &lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;CMD&lt;/span&gt; /bin/bash&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;悬虚镜像&#34;&gt;悬虚镜像&lt;/h2&gt;
+&lt;p&gt;悬虚镜像是指既没有 Repository 又没有 Tag 的镜像。当新建了一个镜像后，为该镜像指定了一个已经存在的 TAG，那么原来的镜像就会变为悬虚镜像。
+为了演示悬虚镜像的生成过程，这里先修改前面定义的 Dockerfile，然后再生成镜像，且生成的新的镜像与前面构建的镜像的名称与 Tag 均相同。&lt;/p&gt;
+&lt;h3 id=&#34;删除悬虚镜像&#34;&gt;删除悬虚镜像&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;docker rmi &amp;lt;imageID&amp;gt;   指定imageID指定删除&lt;/li&gt;
+&lt;li&gt;docker image prune    一次性删除本地所有悬虚镜像&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;build-cache&#34;&gt;build cache&lt;/h2&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;FROM&lt;/span&gt;&lt;span style=&#34;color:#cd5555&#34;&gt; centos:7&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;LABEL&lt;/span&gt; &lt;span style=&#34;color:#00688b&#34;&gt;auth&lt;/span&gt; = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;Tom&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;COPY&lt;/span&gt; hello.log /var/log/&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;RUN&lt;/span&gt; yum -y install vim&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;CMD&lt;/span&gt; /bin/bash&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;镜像生成过程&#34;&gt;镜像生成过程&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;FROM centos:7&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;FROM 指令为最终构建出的镜像设定了一个基础镜像。该语句不会产生新的镜像层，它是使用指定的镜像作为基础镜像层的。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;LABEL auth=&amp;ldquo;Tom&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LABEL指令也会生成一个新的镜像层，该镜像层中记录了json文件内容的修改变化，没有文件系统的变化。&lt;/p&gt;
+&lt;p&gt;如果该指令就是最后一条指令,那么此时形成的镜像的文件系统其实就是原来 FROM 后指定镜像的文件系统，只是 json 文件发生了变化。但由于 ison 文件内容发生了变化，所以产生了新的镜像层。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;COPY hello.log /var/log/&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;COPY 指令会将宿主机中的指定文件复制到容器中的指定目录，所以会改变该镜像层文件系统大小,并生成新的镜像层文件系统内容，从而导致json文件中的镜像ID发生变化，产生了新的镜像层。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;RUN yum -y install vim&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;RUN 指令本身并不会改变镜像层文件系统大小，但由于其 RUN 的命令是 yum install,而该命令运行的结果是下载并安装一个工具，所以导致 RUN 命令最终也改变了镜像层文件系统大小，所以也就生成了新的镜像层文件系统内容。所以json 文件中的镜像 ID 也就发生了变化，产生了新的镜像层。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CMD /bin/bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于 CMD 或 ENTRYPOINT 指令，其是不会改变镜像层文件系统大小的，因为其不会在docker build 过程中执行。所以该条指令没有改变镜像层文件系统大小。&lt;/p&gt;
+&lt;p&gt;但对于 CMD 或 ENTRYPOINT 指令，由于其是将来容器启动后要执行的命令，所以会将该条指令写入到 json 文件中，会引发 json 文件的变化。所以json 文件中的镜像 ID 也就发生了变化，产生了新的镜像层。&lt;/p&gt;
+&lt;h3 id=&#34;docker-build-cache机制&#34;&gt;docker build cache机制&lt;/h3&gt;
+&lt;p&gt;Docker Daemnon 通过 Dockerfile 构建镜像时，当发现即将新构建出的镜像(层)与本地已存在的某镜像(层)重复时，默认会复用已存在镜像(层)而不是重新构建新的镜像(层)，这种机制称为 docker build cache 机制。该机制不仅加快了镜像的构建过程，同时也大量节省了Docker 宿主机的空间。&lt;/p&gt;
+&lt;p&gt;docker build cache 并不是占用内存的 cache，而是一种对磁盘中相应镜像层的检索、复用机制。所以，无论是关闭 Docker 引擎，还是重启 Docker 宿主机，只要该镜像(层)存在于本地，那么就会复用。&lt;/p&gt;
+&lt;h3 id=&#34;build-cache-失效&#34;&gt;build cache 失效&lt;/h3&gt;
+&lt;p&gt;产生一下三种变化后，从发生变化的指令层开始所有的镜像层cache全部失效。即从该指令行开始的镜像层将构建出新的镜像层，而不再使用 buildcache，即使后面的指令并未发生变化。因为镜像关系本质上是一种树状关系，只要其上层节点变了，那么该发生变化节点的所有下层节点也就全部变化了&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dockerfile文件发生变化&lt;/li&gt;
+&lt;li&gt;ADD或COPY指令内容发生变化&lt;/li&gt;
+&lt;li&gt;RUN指令外部依赖变化&lt;/li&gt;
+&lt;li&gt;指定不使用build cache&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;有些时候为了确保在镜像构建过程中使用到新的数据，在镜像构建 docker build 时，通过&amp;ndash;no-cache 选项指定不使用 build cache。&lt;/p&gt;
+&lt;h3 id=&#34;清理悬虚build-cache&#34;&gt;清理悬虚build cache&lt;/h3&gt;
+&lt;p&gt;指无法使用的build  cache，一般是悬虚镜像产生的build cache。&lt;/p&gt;
+&lt;p&gt;通过docker system prune 清除&lt;/p&gt;
+- localhost/posts/dockerfile/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Docker容器</title>
+        <link>localhost/posts/docker%E5%AE%B9%E5%99%A8/</link>
+        <pubDate>Tue, 21 Nov 2023 21:23:08 -0400</pubDate>
+        
+        <guid>localhost/posts/docker%E5%AE%B9%E5%99%A8/</guid>
+        <description>My Site localhost/posts/docker%E5%AE%B9%E5%99%A8/ -&lt;h2 id=&#34;容器基础&#34;&gt;容器基础&lt;/h2&gt;
+&lt;h3 id=&#34;1容器启动流程&#34;&gt;1、容器启动流程&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231121190107.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通过 docker run 命令可以启动运行一个容器。该命令在执行时首先会在本地查找指定的镜像，如果找到了，则直接启动，否则会到镜像中心查找。如果镜像中心存在该镜像，则会下载到本地并启动，如果镜像中心也没有，则直接报错。&lt;/p&gt;
+&lt;p&gt;如果再与多架构镜像原理相整合，则就形成了完整的容器启动流程。&lt;/p&gt;
+&lt;h3 id=&#34;2容器运行本质&#34;&gt;2、容器运行本质&lt;/h3&gt;
+&lt;p&gt;Docker 容器存在的意义就是为了运行容器中的应用，对外提供服务，所以启动容器的目的就是启动运行该容器中的应用。容器中的应用运行完毕后，容器就会自动终止。所以如果不想让容器启动后立即终止运行，则就需要使容器应用不能立即结束。通常采用的方式有两种，使应用处于与用户交互的状态或等待状态。&lt;/p&gt;
+&lt;h2 id=&#34;容器运行命令&#34;&gt;容器运行命令&lt;/h2&gt;
+&lt;h3 id=&#34;1交互模式&#34;&gt;1、交互模式&lt;/h3&gt;
+&lt;p&gt;交互模式运行ubuntu&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --name myubuntu -it ubuntu:latest /bin/bash&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;交互模式运行tomcat&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --name mytomcat8 -it tomcat:8.5.32 /bin/bash&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2守护进程模式&#34;&gt;2、守护进程模式&lt;/h3&gt;
+&lt;p&gt;守护进程模式运行tomcat&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --name mytom6 -dp 8082:8080 tomcat:8.5.49&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3删除容器&#34;&gt;3、删除容器&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;退出并停止容器 ：exit&lt;/li&gt;
+&lt;li&gt;退出不停止容器Ctrl+P+Q&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;4exec&#34;&gt;4、exec&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker &lt;span style=&#34;color:#658b00&#34;&gt;exec&lt;/span&gt; -w root -it mytom /bin/bash&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;exec在exit退出容器时不会关闭容器&lt;/p&gt;
+&lt;h3 id=&#34;5attach&#34;&gt;5、attach&lt;/h3&gt;
+&lt;p&gt;必须要连接到正在运行的容器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker attach mytom2&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;附加标准输入、标准输出和错误流到正在运行的容器&lt;/p&gt;
+&lt;h3 id=&#34;6ps&#34;&gt;6、ps&lt;/h3&gt;
+&lt;p&gt;显示容器&lt;/p&gt;
+&lt;h3 id=&#34;7容器启停&#34;&gt;7、容器启停&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;start&lt;/li&gt;
+&lt;li&gt;restart&lt;/li&gt;
+&lt;li&gt;stop&lt;/li&gt;
+&lt;li&gt;kill&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;8删除容器&#34;&gt;8、删除容器&lt;/h3&gt;
+&lt;p&gt;强制删除&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker rm -f xxxx&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;9把容器打包为镜像&#34;&gt;9、把容器打包为镜像&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker commit -a &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xx &amp;lt;xxx@qq.com&amp;gt;&amp;#34;&lt;/span&gt; -m &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xxx&amp;#34;&lt;/span&gt; mycentos&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;10导入导出容器&#34;&gt;10、导入导出容器&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;导出容器export&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;将容器tom导出到/root目录的tomcat8.tar文件中&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker &lt;span style=&#34;color:#658b00&#34;&gt;export&lt;/span&gt; -o tomcat8.tar tom&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;加载容器import&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-dockerfile&#34; data-lang=&#34;dockerfile&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker import tomcat8.tar &amp;lt;repository&amp;gt;:&amp;lt;tag&amp;gt;&lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;与save/load命令的对比&lt;/p&gt;
+&lt;p&gt;​	export 与 save&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;export 作用于容器，save 作用于镜像，但它们导出的结果都为 tar 文件&lt;/li&gt;
+&lt;li&gt;export 一次只能对一个容器进行导出，save 一次可以对多个镜像进行导出&lt;/li&gt;
+&lt;li&gt;export 只是对当前容器的文件系统快照进行导出，其会丢弃原镜像的所有历史记录与元数据信息，save 则是保存了原镜像的完整记录&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;import与load&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;import 导入的是容器包，load 加载的是镜像包，但最终都会恢复为镜像&lt;/li&gt;
+&lt;li&gt;import 恢复为的镜像只包含当前镜像一层,load 恢复的镜像与原镜像的分层是完全相同的&lt;/li&gt;
+&lt;li&gt;import 恢复的镜像就是新构建的镜像，与原镜像的 magelD 不同: load 恢复的镜像与原镜像是同一个镜像，即ImagelD 相同&lt;/li&gt;
+&lt;li&gt;import 可以为导入的镜像指定&amp;lt;repository&amp;gt;与&amp;lt;tag&amp;gt;,load 加载的镜像不能指定&amp;lt;repository&amp;gt;与&amp;lt;tag&amp;gt;，与原镜像的相同,&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;与docker commit 对比&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;相同点: docker export + docker import 会将一个容器变为一个镜像，docker commit 也可以将一个容器变一个镜像。“
+不同点: docker export + docker import 恢复的镜像仅包含原容器生成的一层分层,docker commit 生成的镜像中包含容器的原镜像的所有分层信息。&lt;/p&gt;
+- localhost/posts/docker%E5%AE%B9%E5%99%A8/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Docker镜像</title>
+        <link>localhost/posts/docker%E9%95%9C%E5%83%8F/</link>
+        <pubDate>Mon, 20 Nov 2023 12:36:08 -0400</pubDate>
+        
+        <guid>localhost/posts/docker%E9%95%9C%E5%83%8F/</guid>
+        <description>My Site localhost/posts/docker%E9%95%9C%E5%83%8F/ -&lt;h2 id=&#34;镜像定位&#34;&gt;镜像定位&lt;/h2&gt;
+&lt;p&gt;对于任何镜像，都可通过&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;进行唯一定位。其中&lt;!-- raw HTML omitted --&gt;一般称为镜像的版本号。&lt;!-- raw HTML omitted --&gt;中有一个比较特殊的版本&amp;ndash;latest。如果不指定，默认&lt;!-- raw HTML omitted --&gt;即为 latest。&lt;/p&gt;
+&lt;h4 id=&#34;自动化镜像&#34;&gt;自动化镜像&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231120101446.png&#34; alt=&#34;微信图片_20231120101446&#34;&gt;&lt;/p&gt;
+&lt;p&gt;AUTOMATED 表示当前镜像是否是“自动化镜像”什么是自动化镜像?就是使用 DockerHub 连接一个包含 Dockerfile 文件(专门构建镜像用的文件)的 GitHub 仓库或 Bitbucket 仓库的源码托管平台，然后 Docker Hub 就会自动根据 Dockerfile 内容构建镜像。这种构建出的镜像会被标记为AUTOMATED,这种构建镜像的方式称为 Trusted Build(受信构建)。只要 Dockerfile文件内容发生变化，那么 Docker Hub 就会构建出新的镜像。&lt;/p&gt;
+&lt;h2 id=&#34;镜像操作&#34;&gt;镜像操作&lt;/h2&gt;
+&lt;h4 id=&#34;1docker-pull&#34;&gt;1、docker pull&lt;/h4&gt;
+&lt;h4 id=&#34;2docker-images&#34;&gt;2、docker images&lt;/h4&gt;
+&lt;h4 id=&#34;3-docker-search&#34;&gt;3、 docker search&lt;/h4&gt;
+&lt;p&gt;​	通过docker search可以从docker hub上查看指定名称的镜像&lt;/p&gt;
+&lt;h4 id=&#34;4docker-rmi&#34;&gt;4、docker rmi&lt;/h4&gt;
+&lt;p&gt;​	删除本地镜像&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;-f，&amp;ndash;force  强制移除打开了容器的镜像&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;ndash;no-prune&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;5导入导出镜像&#34;&gt;5、导入导出镜像&lt;/h4&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-dock&#34; data-lang=&#34;dock&#34;&gt;docker save -o my.tar tomacat:8.5.32 zookeeper：3.7
+docker save tomacat:8.5.32 zookeeper：3.7 &amp;gt; zt.tar
+
+docker load -i my.tar
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;镜像分层&#34;&gt;镜像分层&lt;/h2&gt;
+&lt;p&gt;Docker 镜像由一些松合的&lt;strong&gt;只读&lt;/strong&gt;镜像层组成，Docker Daemon 负责堆叠这些镜像层，并将它们关联为一个统一的整体，即对外表现出的是一个独立的对象。&lt;/p&gt;
+&lt;p&gt;通过 docker pull 命令拉取指定的镜像时,每个 Pull complete 结尾的行就代表下载完毕了一个镜像层。&lt;/p&gt;
+&lt;p&gt;不过，分层结构的最大的好处是，在不同镜像间实现资源共享，即不同镜像对相同下层镜像的复用。对于 docker pull 命令,其在拉取之前会先获取到其要拉取镜像的所有 imagelD,然后在本地查找是否存在这些分层。如果存在，则不再进行拉取，而是共享本地的该分层大大节点的存储空间与网络带宽，提升了拉取效率。&lt;/p&gt;
+&lt;h4 id=&#34;1镜像层构成&#34;&gt;1、镜像层构成&lt;/h4&gt;
+&lt;p&gt;每个镜像层由两部分构成：镜像文件系统与镜像Json文件。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;镜像文件系统（FS)构成&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;​	(1)基础镜像层&lt;/p&gt;
+&lt;p&gt;​	所有镜像的最下层都具有一个可以看得到的基础镜像层 Base lmage,基础镜像层的文件系统称为根文件系统 rootfs。而 rootfs 则是建立在 Linux 系统中“看不到的”引导文件系统bootfs 之上。&lt;/p&gt;
+&lt;p&gt;​	(2)拓展镜像层&lt;/p&gt;
+&lt;p&gt;​	在基础镜像层之上的镜像层称为扩展镜像层。顾名思义,其是对基础镜像层功能的扩展。在 Dockerfile 中，每条指令都是用于完成某项特定功能的，而每条指令都会生成一个扩展镜像层。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231120110925.png&#34; alt=&#34;微信图片_20231120110925&#34;&gt;&lt;/p&gt;
+&lt;p&gt;(3)容器层&lt;/p&gt;
+&lt;p&gt;​	一旦镜像运行了起来就形成了容器，而容器就是一个运行中的 Linux 系统，其也是具有文件系统的。容器的这个文件系统是在 docker 镜像最外层之上增加了一个可读写的容器层对文件的任何更改都只存在于容器层。因此任何对容器的操作都不会影响到镜像本身。&lt;/p&gt;
+&lt;p&gt;​	容器层如果需要修改某个文件，系统会从容器层开始向下一层层的查找该文件，直到找到为止。任何对于文件的操作都会记录在容器层。例如，要修改某文件，容器层会首先把在镜像层找到的文件 copy 到容器层，然后再进行修改。删除文件也只会将存在于容器层中的文件副本删除。&lt;/p&gt;
+&lt;p&gt;​	可以看出,Docker 容器就是一个叠加后的文件系统,而这个容器层称为 Union File System,联合文件系统。&lt;/p&gt;
+&lt;h5 id=&#34;拓展linuxos启动过程&#34;&gt;拓展、LinuxOS启动过程&lt;/h5&gt;
+&lt;p&gt;​	Linux的bootfs文件系统由两部分构成：bootloader和kernel&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231120121826.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;镜像摘要&#34;&gt;镜像摘要&lt;/h2&gt;
+&lt;p&gt;一串长度64位的16进制字符串，是镜像内容的哈希值，是内容散列。&lt;/p&gt;
+&lt;p&gt;Docker 默认采用的 Hash 算法是 SHA256，即 Hah 值是一个长度为 256 位的二进制值Docker 使用 16 进制表示，即变为了长度为 64 位的字符串。&lt;/p&gt;
+&lt;p&gt;主要是用来区分相同&amp;lt;repository&amp;gt;:&amp;lt;tag&amp;gt;的不同镜像&lt;/p&gt;
+&lt;h2 id=&#34;多架构镜像&#34;&gt;多架构镜像&lt;/h2&gt;
+&lt;p&gt;多架构镜像，是某&lt;!-- raw HTML omitted --&gt;中的某&lt;!-- raw HTML omitted --&gt;镜像针对不同操作系统/系统架构的不同镜像实现。即多架构镜像中包含的镜像的&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;都是相同的，但它们针对的操作系统/系统架构是不同的。&lt;/p&gt;
+&lt;p&gt;在 Docker Hub 中，镜像的多架构信息保存在 Manifest 文件中。在拉取镜像时，Docker会随着 pull 命令将当前 Docker 系统的 OS 与架构信息一并提交给 Docker Hub。Docker Hub 首先会根据镜像的&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;查找是否存在 Manifest。如果不存在，则直接查找并返回&lt;!-- raw HTML omitted --&gt;:&lt;!-- raw HTML omitted --&gt;镜像即可: 如果存在，则会在 Manifest 中查找是否存在指定系统/架构的镜像。如果存在该系统/架构，则根据 Manifest 中记录的地址找到该镜像的位置。&lt;/p&gt;
+- localhost/posts/docker%E9%95%9C%E5%83%8F/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Docker概述</title>
+        <link>localhost/posts/docker%E6%A6%82%E8%BF%B0/</link>
+        <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
+        
+        <guid>localhost/posts/docker%E6%A6%82%E8%BF%B0/</guid>
+        <description>My Site localhost/posts/docker%E6%A6%82%E8%BF%B0/ -&lt;h2 id=&#34;devops&#34;&gt;DevOps&lt;/h2&gt;
+&lt;p&gt;DevOps是一种执行标准（思想），主要用于促进开发、测试与运维的整合&lt;/p&gt;
+&lt;h2 id=&#34;容器与虚拟机的区别&#34;&gt;容器与虚拟机的区别&lt;/h2&gt;
+&lt;p&gt;最大的区别是，虚拟机中存在独立的硬件系统与操作系统，容器中全部是共享的宿主机中的操作系统与硬件系统&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;localhost/images//1.png&#34; alt=&#34;1&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C2.png&#34; alt=&#34;2&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;windows系统的虚拟化&#34;&gt;Windows系统的虚拟化&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C3.png&#34; alt=&#34;3&#34;&gt;&lt;/p&gt;
+- localhost/posts/docker%E6%A6%82%E8%BF%B0/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>Docker引擎</title>
+        <link>localhost/posts/docker%E5%BC%95%E6%93%8E/</link>
+        <pubDate>Fri, 17 Nov 2023 19:48:08 -0400</pubDate>
+        
+        <guid>localhost/posts/docker%E5%BC%95%E6%93%8E/</guid>
+        <description>My Site localhost/posts/docker%E5%BC%95%E6%93%8E/ -&lt;h3 id=&#34;docker引擎架构&#34;&gt;Docker引擎架构&lt;/h3&gt;
+&lt;p&gt;Docker 引擎是用来运行和管理容器的核心软件，其现代架构由四部分主要组件构成:Docker Client，Dockerd、Containerd 与 Runc。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Docker Client&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Docker 客户端，Docker 引擎提供的 CLI工具，用于用户向 Docker 提交命令请求。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dockerd&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Dockerd，即 Docker Daemon。在现代 Dockerd 中的主要包含的功能有镜像构建、镜像管理、RESTAPI、核心网络及编排等。其通过gRPC与 Containerd 进行通信。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Containerd&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Containerd，即 Container Daemon，该项目的主要功能是管理容器的生命周期。不过其本身并不会去创建容器，而是调用 Runc 来完成容器的创建。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Runc&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Runc 只有一个作用一创建容器，其本质是一个独立的容器运行时 CLI工具。其在 fork出一个容器子进程后会启动该容器进程。在容器进程启动完毕后，Runc 会自动退出。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Shim&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Shim 是实现“Daemonless Container”不可或缺的工具，使容器与 Docker Daemon 解耦,使得 DockerDaemon 的维护与升级不会影响到运行中的容器。
+每次创建容器时,Containerd 会先 fork 出 Shim 进程,再由 Shim 进程 fork 出 Runc 进程当 Runc自动退出之前，会先将新容器进程的父进程指定为相应的 shim 进程。”除了作为容器的父进程外，shim 进程还具有两个重要功能:&lt;/p&gt;
+&lt;p&gt;​	1、保持所有 STDIN 与STDOUT 流的开启状态，从而使得当 Docker Daemon 重启时，容器不会因为 Pipe 的关闭而终止。&lt;/p&gt;
+&lt;p&gt;​	 2、将容器的退出状态反馈给 Docker Daemon。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C4.png&#34; alt=&#34;4&#34;&gt;&lt;/p&gt;
+- localhost/posts/docker%E5%BC%95%E6%93%8E/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>golang---5</title>
+        <link>localhost/posts/golang--5/</link>
+        <pubDate>Wed, 15 Nov 2023 20:23:08 -0400</pubDate>
+        
+        <guid>localhost/posts/golang--5/</guid>
+        <description>My Site localhost/posts/golang--5/ -&lt;h3 id=&#34;映射&#34;&gt;映射&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;map内部无序&lt;/li&gt;
+&lt;li&gt;map初始化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//       [key]value
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//声明不会分配空间，必须用make初始化来分配空间
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;a = &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;)&lt;span style=&#34;color:#228b22&#34;&gt;//存放10个键值对，不传size大小默认分配一个
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;b := &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;c := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#b452cd&#34;&gt;3425&lt;/span&gt;:&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;dff&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;map操作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//增加
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;] = value
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//删除
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#658b00&#34;&gt;delete&lt;/span&gt;(&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//查找
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;value, &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;bool&lt;/span&gt; = &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[key]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//遍历
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; k,v := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; b{    
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//二重map
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;a := &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;a[&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;11&amp;#34;&lt;/span&gt;] = &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;a[&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;11&amp;#34;&lt;/span&gt;][&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;] = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;a[&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;22&amp;#34;&lt;/span&gt;] = &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;a[&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;22&amp;#34;&lt;/span&gt;][&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;] = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;tt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;面向对象&#34;&gt;面向对象&lt;/h3&gt;
+&lt;p&gt;golang基于结构体实现OOP特性&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;定义&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Teacher &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	Name &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    School &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//初始化
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#228b22&#34;&gt;//第一种赋值方式
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; x Teacher
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    x.Name = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#228b22&#34;&gt;//第二种赋值方式
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; ma Teacher = Teacher{&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;s&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;23&lt;/span&gt;, &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;df&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#228b22&#34;&gt;//第三种赋值方式
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; t *Teacher = &lt;span style=&#34;color:#658b00&#34;&gt;new&lt;/span&gt;(Teacher)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    *(t).Name = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fd&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;结构体间转化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Student &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; stu Student
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Person &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; s Student = Student{&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; t Person = Person{&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    s = &lt;span style=&#34;color:#008b45&#34;&gt;Student&lt;/span&gt;(t);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#228b22&#34;&gt;//type起别名后也要强转
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; ss stu = stu{&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    s = &lt;span style=&#34;color:#008b45&#34;&gt;Student&lt;/span&gt;(ss)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;结构体的方法
+&lt;ul&gt;
+&lt;li&gt;方法名首字母大写，可以被其他包访问&lt;/li&gt;
+&lt;li&gt;如果一个类型实现了String()方法，则fmt.Println默认调用这个变量的String()进行输出&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//声明
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; A &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Num &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Person &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//test和A结构体绑定，结构体对象传入为值传递
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (a A) &lt;span style=&#34;color:#008b45&#34;&gt;test&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(a.Num)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//将方法改为地址传递
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (p *Person) &lt;span style=&#34;color:#008b45&#34;&gt;test1&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    (*p).Name = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a A
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    a.&lt;span style=&#34;color:#008b45&#34;&gt;test&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;函数和方法的区别&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;主要看需不需要绑定指定类型&lt;/p&gt;
+&lt;p&gt;对于函数来说，参数类型是什么就要传入什么&lt;/p&gt;
+&lt;p&gt;对于方法来说，指针和值类型可以混用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Student &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Name  &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//方法
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(s Student) test01{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;method01&lt;/span&gt;(s Student){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;跨包创建结构体实例&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果结构体首字母大写的话，在其他包下可以访问&lt;/p&gt;
+&lt;p&gt;如果结构体首字母小写的话，使用工厂模式也可以访问&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//student.go 中
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; model
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; student &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	Name &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;NewStudent&lt;/span&gt;(n &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;) *student{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; &amp;amp;student{n, a}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//main.go中
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;model&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    s := model.&lt;span style=&#34;color:#008b45&#34;&gt;NewStudent&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;22&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(*s)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;封装&#34;&gt;封装&lt;/h4&gt;
+&lt;p&gt;person.go&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; model
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; person &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	Name &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//定义工厂模式的函数，相当于构造函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;NewPerson&lt;/span&gt;(name &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt;) *person{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; &amp;amp;person{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		Name : name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//定义set和get方法，对age进行封装
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (p *person) &lt;span style=&#34;color:#008b45&#34;&gt;SetAge&lt;/span&gt;(age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;if&lt;/span&gt; age &amp;gt; &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt; &amp;amp;&amp;amp; age &amp;lt; &lt;span style=&#34;color:#b452cd&#34;&gt;150&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		p.age = age 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;else&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;error&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (p *person) &lt;span style=&#34;color:#008b45&#34;&gt;GetAge&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; p.age
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;main.go&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;demo12/model&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	p := model.&lt;span style=&#34;color:#008b45&#34;&gt;NewPerson&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	p.&lt;span style=&#34;color:#008b45&#34;&gt;SetAge&lt;/span&gt;(&lt;span style=&#34;color:#b452cd&#34;&gt;12&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;继承&#34;&gt;继承&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Animal &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	Age &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	Weight &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;float32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (an *Animal) &lt;span style=&#34;color:#008b45&#34;&gt;Shot&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;sssss&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (an *Animal) &lt;span style=&#34;color:#008b45&#34;&gt;Show&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;ddddd&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; Cat &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;struct&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#228b22&#34;&gt;//将匿名结构体嵌入
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;	Animal 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; (c *Cat) &lt;span style=&#34;color:#008b45&#34;&gt;Scratch&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;qqq&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#228b22&#34;&gt;//创建cat实例
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;	cat := &amp;amp;Cat{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cat.Animal.Age = &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt; &lt;span style=&#34;color:#228b22&#34;&gt;//======&amp;gt;cat.Age = 3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;	cat.Animal.Weight = &lt;span style=&#34;color:#b452cd&#34;&gt;3.5&lt;/span&gt; &lt;span style=&#34;color:#228b22&#34;&gt;//=&amp;gt;cat.Weight = 3.5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;	cat.Animal.&lt;span style=&#34;color:#008b45&#34;&gt;Shot&lt;/span&gt;() &lt;span style=&#34;color:#228b22&#34;&gt;//=======&amp;gt;cat.Shot()
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;	cat.Animal.&lt;span style=&#34;color:#008b45&#34;&gt;Show&lt;/span&gt;() &lt;span style=&#34;color:#228b22&#34;&gt;//=======&amp;gt;cat.Show()
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;	cat.&lt;span style=&#34;color:#008b45&#34;&gt;Scratch&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;注意点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;匿名结构体字段访问可以简化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;cat.Age会先去找结构体中是否有Age字段，有的话直接使用， 没有的话去找嵌入的结构体类型中的Age（赋值也是如此）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;虽然有多重继承，但是不建议使用&lt;/li&gt;
+&lt;/ul&gt;
+- localhost/posts/golang--5/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>golang---4</title>
+        <link>localhost/posts/golang--4/</link>
+        <pubDate>Tue, 14 Nov 2023 21:26:08 -0400</pubDate>
+        
+        <guid>localhost/posts/golang--4/</guid>
+        <description>My Site localhost/posts/golang--4/ -&lt;h3 id=&#34;数组&#34;&gt;数组&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//定义：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a [&lt;span style=&#34;color:#b452cd&#34;&gt;5&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//遍历(普通for循环)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; i := &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span style=&#34;color:#658b00&#34;&gt;len&lt;/span&gt;(a); i ++{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//遍历（键值循环）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; key, val := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; a{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//初始化
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//第一种
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a[&lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = [&lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//第二种
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a = [&lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//第三种
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a = [...]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//第四种
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a = [...]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;:&lt;span style=&#34;color:#b452cd&#34;&gt;66&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;:&lt;span style=&#34;color:#b452cd&#34;&gt;22&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;:&lt;span style=&#34;color:#b452cd&#34;&gt;66&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;:&lt;span style=&#34;color:#b452cd&#34;&gt;54&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;长度属于类型的一部分&lt;/li&gt;
+&lt;li&gt;Go数组是值类型，拷贝或者传参时默认值传递&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//默认初始化为全0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; arr [&lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;][&lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int16&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//初始化操作
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; arr1 [&lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;][&lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = [&lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;][&lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;},{&lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;6&lt;/span&gt;}}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//遍历
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//方式1：普通for循环
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; i := &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span style=&#34;color:#658b00&#34;&gt;len&lt;/span&gt;(arr); i ++{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; j:= &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;; j &amp;lt; &lt;span style=&#34;color:#658b00&#34;&gt;len&lt;/span&gt;(arr[i]); i ++{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//方式2：键值循环
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; key, value := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; arr{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; k,v := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; value{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;切片&#34;&gt;切片&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//定义切片方式1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; intarr [&lt;span style=&#34;color:#b452cd&#34;&gt;6&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = [&lt;span style=&#34;color:#b452cd&#34;&gt;6&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//索引：从1开始，到3结束（不包含3）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; slice []&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = intarr[&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;:&lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//定义切片方式2：, 参数表示，1、切片类型，2、切片长度，3、切片容量
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;slice := &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;([]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;20&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//定义切片方式3：指定具体数组
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;slice2 := []&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//切片遍历
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//方式1：普通for循环
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; i := &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span style=&#34;color:#658b00&#34;&gt;len&lt;/span&gt;(slice); i ++{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//方式2：键值循环
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; key, value := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; slice{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;切片底层由三部分组成：一个指向底层数组的指针，一个切片的长度，一个切片的容量&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;切片的自动增长&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; intarr [&lt;span style=&#34;color:#b452cd&#34;&gt;6&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = [&lt;span style=&#34;color:#b452cd&#34;&gt;6&lt;/span&gt;]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; slice []&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = inarr[&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;:&lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;slice = &lt;span style=&#34;color:#658b00&#34;&gt;append&lt;/span&gt;(slice, &lt;span style=&#34;color:#b452cd&#34;&gt;9&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;自动增长底层原理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1、底层追加元素时对数组扩容，创建一个新数组，复制元素到新数组中，并在新数组中进行追加&lt;/p&gt;
+&lt;p&gt;2、slice在append后指向新数组的内存&lt;/p&gt;
+&lt;p&gt;3、底层的新数组需要通过切片简介维护操作&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;切片的复制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; a[]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = []&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{&lt;span style=&#34;color:#b452cd&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;4&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; b[]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = &lt;span style=&#34;color:#658b00&#34;&gt;make&lt;/span&gt;([]&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#658b00&#34;&gt;copy&lt;/span&gt;(b, a)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- localhost/posts/golang--4/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>golang---3</title>
+        <link>localhost/posts/golang--3/</link>
+        <pubDate>Mon, 13 Nov 2023 21:26:08 -0400</pubDate>
+        
+        <guid>localhost/posts/golang--3/</guid>
+        <description>My Site localhost/posts/golang--3/ -&lt;h3 id=&#34;包&#34;&gt;包&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;导入包时，要把包的所在文件路径import进来&lt;/li&gt;
+&lt;li&gt;一个目录下的同级文件同属于一个包&lt;/li&gt;
+&lt;li&gt;对包起别名后，原名字失效&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	test &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//这里用test给fmt起别名，在下面的程序中也就只能使用test
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;init函数&#34;&gt;init函数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;初始化函数，每个源文件都能包含init函数，在main函数之前，被GO运行框架调用&lt;/li&gt;
+&lt;li&gt;执行顺序：全局变量定义 &amp;gt; init函数 &amp;gt; main函数&lt;/li&gt;
+&lt;li&gt;多个源文件都有init函数，则按照main.go中的import顺序来执行&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;匿名函数&#34;&gt;匿名函数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;使用场景：只用一次（也可以多次使用（给全局变量），但不常用这种方式）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;result := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(num1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;, num2, &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; num1 + num2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}(&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;20&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;闭包&#34;&gt;闭包&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//getsum参数为空
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;getsum&lt;/span&gt;() &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; sum &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(num &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        sum += num
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; sum
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//闭包：返回的匿名函数 + 匿名函数以外的变量num
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;本质依旧是一个匿名函数，只是这个匿名函数引入外界的变量或者参数&lt;/li&gt;
+&lt;li&gt;特点：
+&lt;ul&gt;
+&lt;li&gt;闭包中使用的变量会一直保存在内存中，所以闭包不可以滥用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;什么情况下使用闭包&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;​	闭包可以保留上次引用的某个值，我们传入一次就可以反复使用&lt;/p&gt;
+&lt;h3 id=&#34;defer&#34;&gt;defer&lt;/h3&gt;
+&lt;p&gt;为了在函数执行完毕后及时释放资源&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;add&lt;/span&gt;(num1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;, num2 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#228b22&#34;&gt;//golang中遇到defer，会将defer中的语句压入栈，然后继续执行后面的语句
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;defer&lt;/span&gt; fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;num1=&amp;#34;&lt;/span&gt;, num1)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;defer&lt;/span&gt; fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;num2=&amp;#34;&lt;/span&gt;, num1)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#228b22&#34;&gt;//函数执行完毕后，从栈中取出语句开始执行，按照栈的先进后出顺序
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#228b22&#34;&gt;//并且相关的值也会被拷贝入栈
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; sum &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = num1 + num2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;sum=&amp;#34;&lt;/span&gt;, sum)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;return&lt;/span&gt; sum
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//上面代码的输出为
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;sum = &lt;span style=&#34;color:#b452cd&#34;&gt;90&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;num2 = &lt;span style=&#34;color:#b452cd&#34;&gt;30&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;num1 = &lt;span style=&#34;color:#b452cd&#34;&gt;60&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;应用defer的场景&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;​	例如在写数据库时，在关闭与数据库连接的代码前加个defer，可以不关注 语句顺序自动关闭&lt;/p&gt;
+&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;len(str)  内置函数不用导包，直接用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;​	golang中，汉字是utf-8字符集，一个汉字3个字节，字母一个字节&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对字符串遍历&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;方式一：键值循环：for-range&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; i, value := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; str{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;index=%d, value=%c  \n&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#228b22&#34;&gt;//golang你好
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//index=0, value=g
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//index=5, value=g
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//index=6, value=你 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//index=9, value=好
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;方式二：r:=[]rune(str)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;r:=&lt;span style=&#34;color:#658b00&#34;&gt;rune&lt;/span&gt;(str)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; i:= &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span style=&#34;color:#658b00&#34;&gt;len&lt;/span&gt;(r); i ++{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;%c&amp;#34;&lt;/span&gt;, r[i])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;字符串转整数n, err := strconv.Atoi(&amp;ldquo;555&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;整数转字符串str = strconv.Itoa(3424)&lt;/li&gt;
+&lt;li&gt;统计字符串中有几个指定的字串&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;count := strings.&lt;span style=&#34;color:#008b45&#34;&gt;Count&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;dfsf&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;不区分大小写的字符串比较&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;EqualFold&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;G&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;g&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;字符串的替换&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;Replace&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;goalsdf&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;go&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;kdf&amp;#34;&lt;/span&gt;, n)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//表示把go替换为kdf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//n表示替换几个，-1表示全部
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;按照指定的某个字符进行切割，将一个字符串转化为字符串数组&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arr := strings.&lt;span style=&#34;color:#008b45&#34;&gt;Split&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;go-sdf-fsd&amp;#34;&lt;/span&gt;,&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;-&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;大小写转换&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;ToLower&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;ToUpper&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;去掉左右两边指定字符&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;Trim&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;TrimLeft&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;TrimRight&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;strings.&lt;span style=&#34;color:#008b45&#34;&gt;TrimSpace&lt;/span&gt;()  &lt;span style=&#34;color:#228b22&#34;&gt;//去掉空格
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;时间&#34;&gt;时间&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;获取当前时间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;now := time.&lt;span style=&#34;color:#008b45&#34;&gt;Now&lt;/span&gt;()  &lt;span style=&#34;color:#228b22&#34;&gt;//返回一个结构体，类型为time.Time，使用具体单词获取具体信息，比如year
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;内置函数&#34;&gt;内置函数&lt;/h3&gt;
+&lt;p&gt;不用调包的函数&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;len()&lt;/li&gt;
+&lt;li&gt;new()&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;num := &lt;span style=&#34;color:#658b00&#34;&gt;new&lt;/span&gt;(&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;)  
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;defer--recover机制处理错误&#34;&gt;defer + recover机制处理错误&lt;/h3&gt;
+&lt;p&gt;提高程序健壮性&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;test&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        err := &lt;span style=&#34;color:#658b00&#34;&gt;recover&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;if&lt;/span&gt;  err != &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;nil&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;get&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }() &lt;span style=&#34;color:#228b22&#34;&gt;//defer后加上匿名函数的调用
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    num1 := &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    num2 := &lt;span style=&#34;color:#b452cd&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    resulr := num1 / num2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- localhost/posts/golang--3/ - This is a customized copyright.</description>
+        </item>
+    
+    
+    
+        <item>
+        <title>golang---2</title>
+        <link>localhost/posts/golang--2/</link>
+        <pubDate>Wed, 08 Nov 2023 20:07:08 -0400</pubDate>
+        
+        <guid>localhost/posts/golang--2/</guid>
+        <description>My Site localhost/posts/golang--2/ -&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;没有特殊字符&lt;/p&gt;
+&lt;p&gt;使用双引号&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;有特殊字符&lt;/p&gt;
+&lt;p&gt;可以用反引号&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;类型转换&#34;&gt;类型转换&lt;/h3&gt;
+&lt;p&gt;golang中需要手动转换类型，没有自动转换&lt;/p&gt;
+&lt;h5 id=&#34;基本数据类型转string&#34;&gt;基本数据类型转string&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; n1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; s1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt; = fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, n1)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; s2 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt; = strconv.&lt;span style=&#34;color:#008b45&#34;&gt;FormatInt&lt;/span&gt;(&lt;span style=&#34;color:#658b00&#34;&gt;int64&lt;/span&gt;(n1), &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;) &lt;span style=&#34;color:#228b22&#34;&gt;//没有s1简单，其中需要强制转换
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h5 id=&#34;string类型转其他类型&#34;&gt;string类型转其他类型&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; b &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;bool&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;b, _ = strconv.&lt;span style=&#34;color:#008b45&#34;&gt;ParseBool&lt;/span&gt;(s1)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;num, _ = strconv.&lt;span style=&#34;color:#008b45&#34;&gt;ParseInt&lt;/span&gt;(n1, in, &lt;span style=&#34;color:#b452cd&#34;&gt;64&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;循环&#34;&gt;循环&lt;/h3&gt;
+&lt;h5 id=&#34;for-range键值循环&#34;&gt;for range键值循环&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; str &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt; = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;hello golang&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; i, value := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; str{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Printf&lt;/span&gt;(i, value)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;函数&#34;&gt;函数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;golang函数不支持重载&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;golang函数支持可变参数&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-GO&#34; data-lang=&#34;GO&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;test&lt;/span&gt;(args...&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;){}   &lt;span style=&#34;color:#228b22&#34;&gt;//可以传入任意多个int类型的数据a
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;Go中，函数也是一种数据类型，可以被复制给变量&lt;/li&gt;
+&lt;li&gt;也可以把函数当形参&lt;/li&gt;
+&lt;li&gt;type命名&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;test&lt;/span&gt;(num &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;){}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;  &lt;span style=&#34;color:#008b45&#34;&gt;test02&lt;/span&gt;(num1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;, num2 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;float32&lt;/span&gt;, testFunc &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;)){}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    a := test
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#008b45&#34;&gt;a&lt;/span&gt;(&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;)   &lt;span style=&#34;color:#228b22&#34;&gt;//等价于test(10)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#008b45&#34;&gt;test02&lt;/span&gt;(&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2.14&lt;/span&gt;, a)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; myFunc &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;包&#34;&gt;包&lt;/h3&gt;
+&lt;p&gt;解决同名函数问题&lt;/p&gt;
+&lt;p&gt;main.go&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; main  &lt;span style=&#34;color:#228b22&#34;&gt;//1、package进行包的声明，建议包和所在文件夹相同
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//2、main包是程序的入口包，一般main函数在main包下
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//3、包名从$GOPATH/src/后开始计算，GOPATH定义在系统变量中
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//4、一次性导入多个包
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xxx&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#008b45&#34;&gt;GetConn&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;dbutils.go&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; dbutils
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;GetConn&lt;/span&gt;(){}  &lt;span style=&#34;color:#228b22&#34;&gt;//5、首字母大写，可以被其他包访问
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- localhost/posts/golang--2/ - This is a customized copyright.</description>
+        </item>
+    
+    
+  </channel>
+</rss> 
