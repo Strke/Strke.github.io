@@ -7,8 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This is a customized copyright.</copyright>
-    <lastBuildDate>Thu, 30 Nov 2023 19:48:08 -0400</lastBuildDate>
+    <lastBuildDate>Fri, 01 Dec 2023 19:48:08 -0400</lastBuildDate>
     <atom:link href="https://Strke.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker网络</title>
+      <link>https://Strke.github.io/posts/docker%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Fri, 01 Dec 2023 19:48:08 -0400</pubDate>
+      <guid>https://Strke.github.io/posts/docker%E7%BD%91%E7%BB%9C/</guid>
+      <description>Docker网络理论 1、Network Namespace Docker 网络的底层原理是 Linux 的 Network Namespace，所以对于 Linux NetworkNamespace 的理解对 Docker 网络底层原理的理解非常重要。
+Network Namespace 是 Linux 内核提供的用于实现网络虚拟化的重要功能，它能创建多个隔离的网络空间，每个独立的网络空间内的防火墙、网卡、路由表、邻居表、协议栈都是独立的。不管是虚拟机还是容器,当运行在独立的命名空间时,就像是一台单独的主机一样。
+1.1、创建两个命名空间 ip netns add ns1 ip netns add ns2 1.2、在命名空间中执行命令 在ns1命名空间中执行命令ip a
+ip netns exec ns1 ip a 1.3、创建网络接口veth pair 使用虚拟设备接口技术可以让两个命名空间联通
+下面的命令用于创建一对网络接口veth-ns1和veth-ns2
+ip link add veth-ns1 type veth peer name veth-ns2 1.4、分配ip给网络接口 给veth-ns2分配192.168.1.1/24的ip地址
+ip netns exec ns1 ip addr add 192.168.1.1/24 dev veth-ns1 ip netns exec ns1 ip addr add 192.168.1.2/24 dev veth-ns2 1.</description>
+    </item>
     <item>
       <title>Docker数据持久化</title>
       <link>https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</link>

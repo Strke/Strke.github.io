@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html><head>
+<title></title>
+
+
+
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+<meta property="og:title" content="" />
+<meta property="og:description" content="基本select语句 SELECT基本语句 SELECT employees_id, salary from employees; 起别名 三种方式，空格、AS、使用引号
+别名只能在ORDER BY 中使用，不能再WHERE中使用 SELECT employee_id emp_id, last_name AS lname, name_id &#34;nm_id&#34; FROM employees; 去除重复行 SELECT DISTINCT department_id from employees; 空值 空值在数据库中用null表示，空值参与运算，结果一定为空值
+使用IFNULL来进行替换空值从而避免空值运算
+SELECT salary*(1 &#43; IFNULL(commission_pct, 0)) * 12 FROM employees; 着重号`` 避免由于表名和关键字相同
+SELECT * FROM `order`; 显示表结构 DESCRIBE employees; DESC employees; 过滤数据 SELECT 字段1, 字段2 FROM employees WHERE department_id = 90; 运算符 比较运算符 等于 = 当用来判断是否为NULL时，结果永远为null
+安全等于&lt;=&gt; 可以用来对NULL做判断
+LEAST() \ GREATEST SELECT LEAST(first_name, last_name) FROM employees; BETWEEN BETWEEN包含边界" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://Strke.github.io/posts/mysql-select%E8%AF%AD%E5%8F%A51/" /><meta property="article:section" content="posts" />
+
+<meta property="og:site_name" content="My Blog" />
+
+
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="基本select语句 SELECT基本语句 SELECT employees_id, salary from employees; 起别名 三种方式，空格、AS、使用引号
+别名只能在ORDER BY 中使用，不能再WHERE中使用 SELECT employee_id emp_id, last_name AS lname, name_id &#34;nm_id&#34; FROM employees; 去除重复行 SELECT DISTINCT department_id from employees; 空值 空值在数据库中用null表示，空值参与运算，结果一定为空值
+使用IFNULL来进行替换空值从而避免空值运算
+SELECT salary*(1 &#43; IFNULL(commission_pct, 0)) * 12 FROM employees; 着重号`` 避免由于表名和关键字相同
+SELECT * FROM `order`; 显示表结构 DESCRIBE employees; DESC employees; 过滤数据 SELECT 字段1, 字段2 FROM employees WHERE department_id = 90; 运算符 比较运算符 等于 = 当用来判断是否为NULL时，结果永远为null
+安全等于&lt;=&gt; 可以用来对NULL做判断
+LEAST() \ GREATEST SELECT LEAST(first_name, last_name) FROM employees; BETWEEN BETWEEN包含边界"/>
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "abcdefghzd");
+</script>
+
+
+
+  
+
+
+
+
+
+
+      <script src="/js/toc.js"></script>
+    
+    <link type="text/css" rel="stylesheet" href="/vendor/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="/scss/dark-mode.min.cb53f1bee2b8900cb4f082afbf00175d6618f281cf9a2fe8619e3b52d20b5721.css" integrity="sha256-y1PxvuK4kAy08IKvvwAXXWYY8oHPmi/oYZ47UtILVyE=" media="screen">
+
+
+<link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Material+Icons">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>console.log("Hello from 'layouts/partials/extended_head.html'")</script>
+
+</head>
+<body>
+    	<div id="app"><div class="single-column-drawer-container" id="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="/posts">
+                    Archive
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/categories">
+                    Categories
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/tags">
+                    Tags
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="/index.xml">
+                    RSS Feed
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e5%9f%ba%e6%9c%acselect%e8%af%ad%e5%8f%a5" class="nav-基本select语句">
+									基本select语句
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#select%e5%9f%ba%e6%9c%ac%e8%af%ad%e5%8f%a5" class="nav-select基本语句">
+									SELECT基本语句
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e8%bf%87%e6%bb%a4%e6%95%b0%e6%8d%ae" class="nav-过滤数据">
+									过滤数据
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e8%bf%90%e7%ae%97%e7%ac%a6" class="nav-运算符">
+									运算符
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e6%af%94%e8%be%83%e8%bf%90%e7%ae%97%e7%ac%a6" class="nav-比较运算符">
+									比较运算符
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e6%8e%92%e5%ba%8f%e4%b8%8e%e5%88%86%e9%a1%b5" class="nav-排序与分页">
+									排序与分页
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1%e6%8e%92%e5%ba%8f" class="nav-1排序">
+									1、排序
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2%e5%88%86%e9%a1%b5" class="nav-2分页">
+									2、分页
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div id="drawer-mask" v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav id="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div id="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a id="navTitle" class="navbar-brand" href="https://Strke.github.io">
+            My Site
+        </a>
+        
+        <button type="button" class="nav-darkmode-toggle" id="darkModeToggleButton2">
+            <i class="material-icons" id="darkModeToggleIcon2">
+                dark_mode
+            </i>
+        </button>
+        
+    </div>
+</nav>
+<div class="single-column-header-container" id="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://Strke.github.io">
+        <div class="single-column-header-title">My Site</div>
+        
+        <div class="single-column-header-subtitle">Themed by Diary.</div>
+        
+
+    </a>
+</div>
+
+            <div id="content">
+                <div id="streamContainer" class="stream-container">
+
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                
+            >
+                <div class="post-title">
+                    
+                    
+                    <div class="post-meta">
+                        
+
+                        
+
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                
+                <div class="post-body" v-pre>
+                
+                    <h2 id="基本select语句">基本select语句</h2>
+<h3 id="select基本语句">SELECT基本语句</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>employees_id,<span style="color:#bbb"> </span>salary<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">from</span><span style="color:#bbb">  </span>employees;<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="起别名">起别名</h5>
+<p>三种方式，空格、AS、使用引号</p>
+<ul>
+<li>别名只能在ORDER BY 中使用，不能再WHERE中使用</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>employee_id<span style="color:#bbb"> </span>emp_id,<span style="color:#bbb"> </span>last_name<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">AS</span><span style="color:#bbb"> </span>lname,<span style="color:#bbb"> </span>name_id<span style="color:#bbb"> </span><span style="color:#cd5555">&#34;nm_id&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees;<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="去除重复行">去除重复行</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">DISTINCT</span><span style="color:#bbb"> </span>department_id<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">from</span><span style="color:#bbb">  </span>employees;<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="空值">空值</h5>
+<p>空值在数据库中用null表示，空值参与运算，结果一定为空值</p>
+<p>使用IFNULL来进行替换空值从而避免空值运算</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> 	</span>salary*(<span style="color:#b452cd">1</span><span style="color:#bbb"> </span>+<span style="color:#bbb"> </span>IFNULL(commission_pct,<span style="color:#bbb"> </span><span style="color:#b452cd">0</span>))<span style="color:#bbb"> </span>*<span style="color:#bbb"> </span><span style="color:#b452cd">12</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees;<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="着重号">着重号``</h5>
+<p>避免由于表名和关键字相同</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>*<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>`<span style="color:#8b008b;font-weight:bold">order</span>`;<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="显示表结构">显示表结构</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">DESCRIBE</span><span style="color:#bbb"> </span>employees;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">DESC</span><span style="color:#bbb"> </span>employees;<span style="color:#bbb">
+</span></span></span></code></pre></div><h3 id="过滤数据">过滤数据</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#a61717;background-color:#e3d2d2">字段</span><span style="color:#b452cd">1</span>,<span style="color:#bbb"> </span><span style="color:#a61717;background-color:#e3d2d2">字段</span><span style="color:#b452cd">2</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>department_id<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span><span style="color:#b452cd">90</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div><h2 id="运算符">运算符</h2>
+<h3 id="比较运算符">比较运算符</h3>
+<h5 id="等于-">等于 =</h5>
+<p>当用来判断是否为NULL时，结果永远为null</p>
+<h5 id="安全等于">安全等于&lt;=&gt;</h5>
+<p>可以用来对NULL做判断</p>
+<h5 id="least--greatest">LEAST() \ GREATEST</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>LEAST(first_name,<span style="color:#bbb"> </span>last_name)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees;<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="between">BETWEEN</h5>
+<p>BETWEEN包含边界</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>employee_id,<span style="color:#bbb"> </span>last_name<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>salary<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">BETWEEN</span><span style="color:#bbb"> </span><span style="color:#b452cd">6000</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">AND</span><span style="color:#bbb"> </span><span style="color:#b452cd">8000</span><span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="in--not-in">IN / NOT IN</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>last_name,<span style="color:#bbb"> </span>salary,<span style="color:#bbb"> </span>department_id<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>department_id<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">NOT</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">IN</span><span style="color:#bbb"> </span>(<span style="color:#b452cd">10</span>,<span style="color:#bbb"> </span><span style="color:#b452cd">20</span>,<span style="color:#bbb"> </span><span style="color:#b452cd">30</span>)<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="模糊查询">模糊查询</h5>
+<p>%：表示不确定个数的字符</p>
+<p>_：表示一个不确定的字符</p>
+<p>\：转义字符</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>last_name<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>last_name<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">LIKE</span><span style="color:#bbb"> </span><span style="color:#cd5555">&#39;%a%&#39;</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div><h5 id="regexp运算符匹配字符串">REGEXP运算符匹配字符串</h5>
+<p>如果匹配上了，返回1，否则返回0，如果匹配对象和匹配条件其中一个为null，则返回null。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span><span style="color:#cd5555">&#39;shkstart&#39;</span><span style="color:#bbb"> </span>REGEXP<span style="color:#bbb"> </span><span style="color:#cd5555">&#39;^s&#39;</span><span style="color:#bbb"> </span>,<span style="color:#bbb"> </span><span style="color:#cd5555">&#39;shkstart&#39;</span><span style="color:#bbb"> </span>REGEXP<span style="color:#bbb"> </span><span style="color:#cd5555">&#39;t$&#39;</span>,<span style="color:#bbb"> </span><span style="color:#cd5555">&#39;shkstart&#39;</span><span style="color:#bbb"> </span>REGEXP<span style="color:#bbb"> </span><span style="color:#cd5555">&#39;hk&#39;</span><span style="color:#bbb">
+</span></span></span></code></pre></div><h2 id="排序与分页">排序与分页</h2>
+<h3 id="1排序">1、排序</h3>
+<p>使用ORDER BY对查询的数据进行排序，默认升序</p>
+<p>升序：ASC</p>
+<p>降序：DESC</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>employee_id,<span style="color:#bbb"> </span>last_name,<span style="color:#bbb"> </span>salary<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">WHERE</span><span style="color:#bbb"> </span>department_id<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">IN</span><span style="color:#bbb"> </span>(<span style="color:#b452cd">50</span>,<span style="color:#bbb"> </span><span style="color:#b452cd">60</span>,<span style="color:#bbb"> </span><span style="color:#b452cd">70</span>)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">ORDER</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">BY</span><span style="color:#bbb"> </span>salary<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">DESC</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div><p>SQL语句执行顺序</p>
+<ul>
+<li>先FROM 和WHERE</li>
+<li>再SELECT</li>
+<li>最后ORDER BY</li>
+</ul>
+<p>所以SELECT中起别名在WHERE中没用，在ORDER BY 中有用</p>
+<h5 id="二级排序">二级排序</h5>
+<p>按照department_id降序排序，salary升序排序</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>employee_id,<span style="color:#bbb"> </span>salary,<span style="color:#bbb"> </span>department_id<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">ORDER</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">BY</span><span style="color:#bbb"> </span>department_id,<span style="color:#bbb"> </span>salary<span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">ASC</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div><h3 id="2分页">2、分页</h3>
+<p>格式</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">LIMIT</span><span style="color:#bbb"> </span><span style="color:#a61717;background-color:#e3d2d2">位置偏移量</span><span style="color:#bbb"> </span><span style="color:#a61717;background-color:#e3d2d2">条目数</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">LIMIT</span><span style="color:#bbb"> </span><span style="color:#b452cd">10</span><span style="color:#bbb"> </span>#<span style="color:#bbb"> </span><span style="color:#a61717;background-color:#e3d2d2">省略了</span><span style="color:#b452cd">0</span><span style="color:#a61717;background-color:#e3d2d2">，表示第一页，一页</span><span style="color:#b452cd">10</span><span style="color:#a61717;background-color:#e3d2d2">个条目</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">LIMIT</span><span style="color:#bbb"> </span><span style="color:#b452cd">2</span><span style="color:#bbb"> </span><span style="color:#8b008b;font-weight:bold">OFFSET</span><span style="color:#bbb"> </span><span style="color:#b452cd">31</span><span style="color:#bbb"> </span>#<span style="color:#bbb"> </span><span style="color:#b452cd">8</span>.<span style="color:#b452cd">0</span><span style="color:#a61717;background-color:#e3d2d2">新特性，表示显示显示</span><span style="color:#b452cd">2</span><span style="color:#a61717;background-color:#e3d2d2">条记录，偏移量为</span><span style="color:#b452cd">31</span><span style="color:#bbb">
+</span></span></span></code></pre></div><p>每页显示20条记录，此时显示第一页</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>employee_id,<span style="color:#bbb"> </span>last_name<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">LIMIT</span><span style="color:#bbb"> </span><span style="color:#b452cd">0</span>,<span style="color:#bbb"> </span><span style="color:#b452cd">20</span><span style="color:#bbb">
+</span></span></span></code></pre></div><p>每页显示20条记录，此时显示第二页</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#8b008b;font-weight:bold">SELECT</span><span style="color:#bbb"> </span>employee_id,<span style="color:#bbb"> </span>last_name<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">FROM</span><span style="color:#bbb"> </span>employees<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#8b008b;font-weight:bold">LIMIT</span><span style="color:#bbb"> </span><span style="color:#b452cd">20</span>,<span style="color:#bbb"> </span><span style="color:#b452cd">20</span>;<span style="color:#bbb">
+</span></span></span></code></pre></div>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="/posts/chapter-1/">
+			下回<br>Chapter I: The Grand Hall
+                </a>
+                
+                
+                
+                <a class="older-posts">
+			上回<br>这是最旧的文章了。
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://giscus.app/client.js"
+        data-repo="username/repo"
+        data-repo-id="**************************"
+        data-category="General"
+        data-category-id="*********************"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+</script>
+
+            </div>
+        </div>
+    </div>
+
+
+                    </div>
+            </div><div id="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://Strke.github.io">
+    
+        <div class="nav-title">
+            My Site
+        </div>
+        
+        <div class="nav-subtitle">
+            Themed by Diary.
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="/posts">
+                Archive
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/categories">
+                Categories
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/tags">
+                Tags
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="/index.xml">
+                RSS Feed
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://risehere.net/">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	This is a customized copyright.
+	
+
+    </div>
+    
+</div><div id="extraContainer" class="extra-container">
+    <div class="toc-wrapper">
+        
+
+        
+        <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e5%9f%ba%e6%9c%acselect%e8%af%ad%e5%8f%a5" class="nav-基本select语句">
+									基本select语句
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#select%e5%9f%ba%e6%9c%ac%e8%af%ad%e5%8f%a5" class="nav-select基本语句">
+									SELECT基本语句
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e8%bf%87%e6%bb%a4%e6%95%b0%e6%8d%ae" class="nav-过滤数据">
+									过滤数据
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e8%bf%90%e7%ae%97%e7%ac%a6" class="nav-运算符">
+									运算符
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e6%af%94%e8%be%83%e8%bf%90%e7%ae%97%e7%ac%a6" class="nav-比较运算符">
+									比较运算符
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e6%8e%92%e5%ba%8f%e4%b8%8e%e5%88%86%e9%a1%b5" class="nav-排序与分页">
+									排序与分页
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1%e6%8e%92%e5%ba%8f" class="nav-1排序">
+									1、排序
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2%e5%88%86%e9%a1%b5" class="nav-2分页">
+									2、分页
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+        
+    </div>
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top"
+            :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+        <a type="button" class="pagination-action" id="darkModeToggleButton">
+            <span class="material-icons pagination-action-icon" id="darkModeToggleIcon">
+                dark_mode
+            </span>
+        </a>
+        
+        
+    </div>
+</div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> by <a href="https://risehere.net/">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	This is a customized copyright.
+	
+</div>
+            </div>
+    
+    <script src="/js/journal.js"></script></body>
+</html>

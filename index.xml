@@ -7,9 +7,84 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This is a customized copyright.</copyright>
-    <lastBuildDate>Thu, 30 Nov 2023 19:48:08 -0400</lastBuildDate>
+    <lastBuildDate>Fri, 01 Dec 2023 19:48:08 -0400</lastBuildDate>
     
         <atom:link href="https://Strke.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    
+        <item>
+        <title>Docker网络</title>
+        <link>https://Strke.github.io/posts/docker%E7%BD%91%E7%BB%9C/</link>
+        <pubDate>Fri, 01 Dec 2023 19:48:08 -0400</pubDate>
+        
+        <guid>https://Strke.github.io/posts/docker%E7%BD%91%E7%BB%9C/</guid>
+        <description>My Site https://Strke.github.io/posts/docker%E7%BD%91%E7%BB%9C/ -&lt;h2 id=&#34;docker网络理论&#34;&gt;Docker网络理论&lt;/h2&gt;
+&lt;h3 id=&#34;1network-namespace&#34;&gt;1、Network Namespace&lt;/h3&gt;
+&lt;p&gt;Docker 网络的底层原理是 Linux 的 Network Namespace，所以对于 Linux NetworkNamespace 的理解对 Docker 网络底层原理的理解非常重要。&lt;/p&gt;
+&lt;p&gt;Network Namespace 是 Linux 内核提供的用于实现网络虚拟化的重要功能，它能创建多个隔离的网络空间，每个独立的网络空间内的防火墙、网卡、路由表、邻居表、协议栈都是独立的。不管是虚拟机还是容器,当运行在独立的命名空间时,就像是一台单独的主机一样。&lt;/p&gt;
+&lt;h5 id=&#34;11创建两个命名空间&#34;&gt;1.1、创建两个命名空间&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip netns add ns1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip netns add ns2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h5 id=&#34;12在命名空间中执行命令&#34;&gt;1.2、在命名空间中执行命令&lt;/h5&gt;
+&lt;p&gt;在ns1命名空间中执行命令&lt;code&gt;ip a&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip netns &lt;span style=&#34;color:#658b00&#34;&gt;exec&lt;/span&gt; ns1 ip a
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h5 id=&#34;13创建网络接口veth-pair&#34;&gt;1.3、创建网络接口veth pair&lt;/h5&gt;
+&lt;p&gt;使用虚拟设备接口技术可以让两个命名空间联通&lt;/p&gt;
+&lt;p&gt;下面的命令用于创建一对网络接口veth-ns1和veth-ns2&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip link add veth-ns1 &lt;span style=&#34;color:#658b00&#34;&gt;type&lt;/span&gt; veth peer name veth-ns2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h5 id=&#34;14分配ip给网络接口&#34;&gt;1.4、分配ip给网络接口&lt;/h5&gt;
+&lt;p&gt;给veth-ns2分配192.168.1.1/24的ip地址&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip netns &lt;span style=&#34;color:#658b00&#34;&gt;exec&lt;/span&gt; ns1 ip addr add 192.168.1.1/24 dev veth-ns1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip netns &lt;span style=&#34;color:#658b00&#34;&gt;exec&lt;/span&gt; ns1 ip addr add 192.168.1.2/24 dev veth-ns2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h5 id=&#34;15up设备&#34;&gt;1.5、up设备&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip netns &lt;span style=&#34;color:#658b00&#34;&gt;exec&lt;/span&gt; ns1 ip link &lt;span style=&#34;color:#658b00&#34;&gt;set&lt;/span&gt; dev veth-ns1 up
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip netns &lt;span style=&#34;color:#658b00&#34;&gt;exec&lt;/span&gt; ns2 ip link &lt;span style=&#34;color:#658b00&#34;&gt;set&lt;/span&gt; dev veth-ns2 up
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;docker网络架构&#34;&gt;Docker网络架构&lt;/h2&gt;
+&lt;p&gt;Docker网络架构主要由CNM、Libnetwork、Driver构成&lt;/p&gt;
+&lt;h3 id=&#34;1cnm&#34;&gt;1、CNM&lt;/h3&gt;
+&lt;p&gt;CNM，Container Network Model，容器网络模型，其是一种网络连接的&lt;strong&gt;解决方案&lt;/strong&gt;，是一种设计规范、设计标准，其规定了 Docker 网络的基础组成要素。&lt;/p&gt;
+&lt;p&gt;CNM 中定义了三个基本要素: 沙盒 Sandbox，终端 Endpoint 与网络 Network。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;沙盒:一个独立的网络栈，其中包括以太网接口、端口号、路由表、DNS 配置等。LinuxNetwork Namespace 是沙盒的标准实现。&lt;/li&gt;
+&lt;li&gt;终端: 虚拟网络接口，主要负责创建连接，即将沙盒连接到网络上。一个终端只能接入某一个网络。&lt;/li&gt;
+&lt;li&gt;网络: 802.1d 网桥的软件实现，是需要交互的终端的集合。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2libnetwork&#34;&gt;2、Libnetwork&lt;/h3&gt;
+&lt;p&gt;CNM 是设计规范，而 Libnetwork 是开源的、由 Go 语言编写的、跨平台的 CNM 的标准实现。&lt;/p&gt;
+&lt;p&gt;Libnetwork 除了实现了 CNM 的三个组件，还实现了本地服务发现、容器负载均衡，以及网络控制层与管理层功能。&lt;/p&gt;
+&lt;h3 id=&#34;3driver&#34;&gt;3、Driver&lt;/h3&gt;
+&lt;p&gt;每种不同的网络类型都有对应的不同的底层 Driver，这些 Driver 负责在主机上真正实现需要的网络功能，例如创建 veth pair 设备等。&lt;/p&gt;
+&lt;p&gt;不过，无论哪种网络类型，其工作方式都是类似的。通过调用 Docker 引擎的 API 发出请求，然后由 Libnetwork 做出框架性的处理，然后将请求转发给相应的 Driver。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130213705.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;bridge网络&#34;&gt;bridge网络&lt;/h2&gt;
+&lt;p&gt;bridge 网络，也称为单机桥接网络，是 Docker 默认的网络模式。该网络模式只能存在于单个 Docker 主机上，其只能用于连接所在 Docker 主机上的容器。&lt;/p&gt;
+&lt;h3 id=&#34;1docker0网桥&#34;&gt;1、docker0网桥&lt;/h3&gt;
+&lt;p&gt;在 Linux 主机上，Docker 的 bridge 网络由 Bridge 驱动创建，其在创建时会创建一个默认的网桥 docker0。容器与网桥间是通过 veth pair 技术实现的连接，网桥与外网间是通过“网络地址转换 NAT 技术”实现的连接，即将通信的数据包中的内网地址转换为外网地址。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130215518.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h5 id=&#34;创建网桥网络&#34;&gt;创建网桥（网络）&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker network create -d bridge
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h5 id=&#34;容器互ping&#34;&gt;容器互ping&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;默认的bridge网络不能用别名来表示容器的网络，自定义的网络bridge2能用别名来表示容器的网络&lt;/li&gt;
+&lt;li&gt;不同的bridge网络不能直接ping&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130221118.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h5 id=&#34;定向连接&#34;&gt;定向连接&lt;/h5&gt;
+&lt;p&gt;定向连接下，只能从bb4连接到bb1，不能从bb1连接到bb4&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --name bb4 -link bb1 -it box
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;none网络&#34;&gt;none网络&lt;/h2&gt;
+&lt;p&gt;none网络，容器是一个独立的Network Namespace，但没有网络接口和IP&lt;/p&gt;
+&lt;h5 id=&#34;创建none网络&#34;&gt;创建none网络&lt;/h5&gt;
+&lt;p&gt;使用&amp;ndash;network none来指定创建的容器没有网络功能&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -d --name bb4 --network none box
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;host网络&#34;&gt;host网络&lt;/h2&gt;
+&lt;p&gt;host网络，是与宿主机host共用一个Network Namespace。该网络类型的容器没有独立的网络空间，没有独立IP&lt;/p&gt;
+&lt;h5 id=&#34;创建host网络&#34;&gt;创建host网络&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-BASH&#34; data-lang=&#34;BASH&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -d -name bb5 --network host box
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;host模型下，容器端口直接暴露给宿主机，不需要做网络映射&lt;/p&gt;
+- https://Strke.github.io/posts/docker%E7%BD%91%E7%BB%9C/ - This is a customized copyright.</description>
+        </item>
     
     
     
@@ -855,93 +930,6 @@ docker load -i my.tar
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    resulr := num1 / num2
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://Strke.github.io/posts/golang--3/ - This is a customized copyright.</description>
-        </item>
-    
-    
-    
-        <item>
-        <title>golang---2</title>
-        <link>https://Strke.github.io/posts/golang--2/</link>
-        <pubDate>Wed, 08 Nov 2023 20:07:08 -0400</pubDate>
-        
-        <guid>https://Strke.github.io/posts/golang--2/</guid>
-        <description>My Site https://Strke.github.io/posts/golang--2/ -&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;没有特殊字符&lt;/p&gt;
-&lt;p&gt;使用双引号&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;有特殊字符&lt;/p&gt;
-&lt;p&gt;可以用反引号&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;类型转换&#34;&gt;类型转换&lt;/h3&gt;
-&lt;p&gt;golang中需要手动转换类型，没有自动转换&lt;/p&gt;
-&lt;h5 id=&#34;基本数据类型转string&#34;&gt;基本数据类型转string&lt;/h5&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; n1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt; = &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; s1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt; = fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, n1)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; s2 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt; = strconv.&lt;span style=&#34;color:#008b45&#34;&gt;FormatInt&lt;/span&gt;(&lt;span style=&#34;color:#658b00&#34;&gt;int64&lt;/span&gt;(n1), &lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;) &lt;span style=&#34;color:#228b22&#34;&gt;//没有s1简单，其中需要强制转换
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h5 id=&#34;string类型转其他类型&#34;&gt;string类型转其他类型&lt;/h5&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; b &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;bool&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;b, _ = strconv.&lt;span style=&#34;color:#008b45&#34;&gt;ParseBool&lt;/span&gt;(s1)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;num, _ = strconv.&lt;span style=&#34;color:#008b45&#34;&gt;ParseInt&lt;/span&gt;(n1, in, &lt;span style=&#34;color:#b452cd&#34;&gt;64&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;循环&#34;&gt;循环&lt;/h3&gt;
-&lt;h5 id=&#34;for-range键值循环&#34;&gt;for range键值循环&lt;/h5&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;var&lt;/span&gt; str &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;string&lt;/span&gt; = &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;hello golang&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;for&lt;/span&gt; i, value := &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;range&lt;/span&gt; str{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fmt.&lt;span style=&#34;color:#008b45&#34;&gt;Printf&lt;/span&gt;(i, value)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;函数&#34;&gt;函数&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;golang函数不支持重载&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;golang函数支持可变参数&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-GO&#34; data-lang=&#34;GO&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;test&lt;/span&gt;(args...&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;){}   &lt;span style=&#34;color:#228b22&#34;&gt;//可以传入任意多个int类型的数据a
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;Go中，函数也是一种数据类型，可以被复制给变量&lt;/li&gt;
-&lt;li&gt;也可以把函数当形参&lt;/li&gt;
-&lt;li&gt;type命名&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;test&lt;/span&gt;(num &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;){}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;  &lt;span style=&#34;color:#008b45&#34;&gt;test02&lt;/span&gt;(num1 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;, num2 &lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;float32&lt;/span&gt;, testFunc &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;)){}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    a := test
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#008b45&#34;&gt;a&lt;/span&gt;(&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;)   &lt;span style=&#34;color:#228b22&#34;&gt;//等价于test(10)
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#008b45&#34;&gt;test02&lt;/span&gt;(&lt;span style=&#34;color:#b452cd&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#b452cd&#34;&gt;2.14&lt;/span&gt;, a)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;type&lt;/span&gt; myFunc &lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#00688b;font-weight:bold&#34;&gt;int&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;包&#34;&gt;包&lt;/h3&gt;
-&lt;p&gt;解决同名函数问题&lt;/p&gt;
-&lt;p&gt;main.go&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; main  &lt;span style=&#34;color:#228b22&#34;&gt;//1、package进行包的声明，建议包和所在文件夹相同
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//2、main包是程序的入口包，一般main函数在main包下
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//3、包名从$GOPATH/src/后开始计算，GOPATH定义在系统变量中
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;//4、一次性导入多个包
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#228b22&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt;(
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;xxx&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;main&lt;/span&gt;(){
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#008b45&#34;&gt;GetConn&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;dbutils.go&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;package&lt;/span&gt; dbutils
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#cd5555&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8b008b;font-weight:bold&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#008b45&#34;&gt;GetConn&lt;/span&gt;(){}  &lt;span style=&#34;color:#228b22&#34;&gt;//5、首字母大写，可以被其他包访问
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;- https://Strke.github.io/posts/golang--2/ - This is a customized copyright.</description>
         </item>
     
     

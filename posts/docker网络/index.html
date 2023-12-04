@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-<title>Docker数据持久化</title>
+<title>Docker网络</title>
 
 
 
@@ -16,12 +16,12 @@
 
 
 
-<meta property="og:title" content="Docker数据持久化" />
+<meta property="og:title" content="Docker网络" />
 <meta property="og:description" content="Esmeralda" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://Strke.github.io/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2023-11-30T19:48:08-04:00" />
-<meta property="article:modified_time" content="2023-11-30T19:48:08-04:00" /><meta property="og:site_name" content="My Blog" />
+<meta property="og:url" content="https://Strke.github.io/posts/docker%E7%BD%91%E7%BB%9C/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-12-01T19:48:08-04:00" />
+<meta property="article:modified_time" content="2023-12-01T19:48:08-04:00" /><meta property="og:site_name" content="My Blog" />
 
 
 
@@ -29,7 +29,7 @@
 
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Docker数据持久化"/>
+<meta name="twitter:title" content="Docker网络"/>
 <meta name="twitter:description" content="Esmeralda"/>
 
 
@@ -163,33 +163,11 @@
 									<ul>
 								
 							
-								
-									<ul>
-								
-							
 						
 						
 							<li>
-								<a href="#%e5%ae%9a%e5%88%b6%e9%95%9c%e5%83%8f%e6%8c%81%e4%b9%85%e5%8c%96" class="nav-定制镜像持久化">
-									定制镜像持久化
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e6%95%b0%e6%8d%ae%e5%8d%b7" class="nav-数据卷">
-									数据卷
+								<a href="#docker%e7%bd%91%e7%bb%9c%e7%90%86%e8%ae%ba" class="nav-docker网络理论">
+									Docker网络理论
 								</a>
 							</li>
 						
@@ -212,62 +190,8 @@
 						
 						
 							<li>
-								<a href="#%e5%88%9b%e5%bb%ba%e8%af%bb%e5%86%99%e6%95%b0%e6%8d%ae%e5%8d%b7" class="nav-创建读写数据卷">
-									创建读写数据卷
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e5%88%9b%e5%bb%ba%e5%8f%aa%e8%af%bb%e6%95%b0%e6%8d%ae%e5%8d%b7" class="nav-创建只读数据卷">
-									创建只读数据卷
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e6%95%b0%e6%8d%ae%e5%8d%b7%e5%85%b1%e4%ba%ab" class="nav-数据卷共享">
-									数据卷共享
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e5%85%b1%e4%ba%ab%e6%96%b9%e5%bc%8f" class="nav-共享方式">
-									共享方式
+								<a href="#1network-namespace" class="nav-1network-namespace">
+									1、Network Namespace
 								</a>
 							</li>
 						
@@ -288,8 +212,154 @@
 						
 						
 							<li>
-								<a href="#dockerfile%e6%8c%81%e4%b9%85%e5%8c%96" class="nav-dockerfile持久化">
-									Dockerfile持久化
+								<a href="#docker%e7%bd%91%e7%bb%9c%e6%9e%b6%e6%9e%84" class="nav-docker网络架构">
+									Docker网络架构
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1cnm" class="nav-1cnm">
+									1、CNM
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2libnetwork" class="nav-2libnetwork">
+									2、Libnetwork
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#3driver" class="nav-3driver">
+									3、Driver
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#bridge%e7%bd%91%e7%bb%9c" class="nav-bridge网络">
+									bridge网络
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1docker0%e7%bd%91%e6%a1%a5" class="nav-1docker0网桥">
+									1、docker0网桥
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#none%e7%bd%91%e7%bb%9c" class="nav-none网络">
+									none网络
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#host%e7%bd%91%e7%bb%9c" class="nav-host网络">
+									host网络
 								</a>
 							</li>
 						
@@ -359,7 +429,7 @@
                 
             >
                 <div class="post-title">
-                    Docker数据持久化
+                    Docker网络
                     
                     <div class="post-subtitle">
                         Esmeralda
@@ -368,7 +438,7 @@
                     <div class="post-meta">
                         
                         <time itemprop="datePublished">
-                            2023-11-30 19:48
+                            2023-12-01 19:48
                         </time>
                         
 
@@ -388,57 +458,74 @@
                 
                 <div class="post-body" v-pre>
                 
-                    <p>在容器层的 UnionFS(联合文件系统) 中对文件/目录的任何修改，无论是手工修改还是容器在运行过程中的修改，在该容器丢失或被删除后这些修改将全部丢失。即这些修改是无法保存下来的。若要保存下来这些修改，通常有两种方式:</p>
+                    <h2 id="docker网络理论">Docker网络理论</h2>
+<h3 id="1network-namespace">1、Network Namespace</h3>
+<p>Docker 网络的底层原理是 Linux 的 Network Namespace，所以对于 Linux NetworkNamespace 的理解对 Docker 网络底层原理的理解非常重要。</p>
+<p>Network Namespace 是 Linux 内核提供的用于实现网络虚拟化的重要功能，它能创建多个隔离的网络空间，每个独立的网络空间内的防火墙、网卡、路由表、邻居表、协议栈都是独立的。不管是虚拟机还是容器,当运行在独立的命名空间时,就像是一台单独的主机一样。</p>
+<h5 id="11创建两个命名空间">1.1、创建两个命名空间</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ip netns add ns1
+</span></span><span style="display:flex;"><span>ip netns add ns2
+</span></span></code></pre></div><h5 id="12在命名空间中执行命令">1.2、在命名空间中执行命令</h5>
+<p>在ns1命名空间中执行命令<code>ip a</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ip netns <span style="color:#658b00">exec</span> ns1 ip a
+</span></span></code></pre></div><h5 id="13创建网络接口veth-pair">1.3、创建网络接口veth pair</h5>
+<p>使用虚拟设备接口技术可以让两个命名空间联通</p>
+<p>下面的命令用于创建一对网络接口veth-ns1和veth-ns2</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ip link add veth-ns1 <span style="color:#658b00">type</span> veth peer name veth-ns2
+</span></span></code></pre></div><h5 id="14分配ip给网络接口">1.4、分配ip给网络接口</h5>
+<p>给veth-ns2分配192.168.1.1/24的ip地址</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ip netns <span style="color:#658b00">exec</span> ns1 ip addr add 192.168.1.1/24 dev veth-ns1
+</span></span><span style="display:flex;"><span>ip netns <span style="color:#658b00">exec</span> ns1 ip addr add 192.168.1.2/24 dev veth-ns2
+</span></span></code></pre></div><h5 id="15up设备">1.5、up设备</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ip netns <span style="color:#658b00">exec</span> ns1 ip link <span style="color:#658b00">set</span> dev veth-ns1 up
+</span></span><span style="display:flex;"><span>ip netns <span style="color:#658b00">exec</span> ns2 ip link <span style="color:#658b00">set</span> dev veth-ns2 up
+</span></span></code></pre></div><h2 id="docker网络架构">Docker网络架构</h2>
+<p>Docker网络架构主要由CNM、Libnetwork、Driver构成</p>
+<h3 id="1cnm">1、CNM</h3>
+<p>CNM，Container Network Model，容器网络模型，其是一种网络连接的<strong>解决方案</strong>，是一种设计规范、设计标准，其规定了 Docker 网络的基础组成要素。</p>
+<p>CNM 中定义了三个基本要素: 沙盒 Sandbox，终端 Endpoint 与网络 Network。</p>
 <ul>
-<li>定制镜像持久化:将这个修改过的容器生成一个新的镜像，让这些修改变为只读的镜像.</li>
-<li>数据卷持久化:将这些修改通过数据卷同步到宿主机</li>
+<li>沙盒:一个独立的网络栈，其中包括以太网接口、端口号、路由表、DNS 配置等。LinuxNetwork Namespace 是沙盒的标准实现。</li>
+<li>终端: 虚拟网络接口，主要负责创建连接，即将沙盒连接到网络上。一个终端只能接入某一个网络。</li>
+<li>网络: 802.1d 网桥的软件实现，是需要交互的终端的集合。</li>
 </ul>
-<h3 id="定制镜像持久化">定制镜像持久化</h3>
-<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span>docker commit -m=<span style="color:#cd5555">&#34;xxxx&#34;</span> -a=<span style="color:#cd5555">&#34;xxx&#34;</span> mytom tomcat10:own<span style="color:#a61717;background-color:#e3d2d2">
-</span></span></span></code></pre></div><p>使用docker commit将对容器的修改保存为镜像</p>
-<h3 id="数据卷">数据卷</h3>
-<p>Docker的三种同步方式（宿主机与容器文件系统间的数据同步）：</p>
+<h3 id="2libnetwork">2、Libnetwork</h3>
+<p>CNM 是设计规范，而 Libnetwork 是开源的、由 Go 语言编写的、跨平台的 CNM 的标准实现。</p>
+<p>Libnetwork 除了实现了 CNM 的三个组件，还实现了本地服务发现、容器负载均衡，以及网络控制层与管理层功能。</p>
+<h3 id="3driver">3、Driver</h3>
+<p>每种不同的网络类型都有对应的不同的底层 Driver，这些 Driver 负责在主机上真正实现需要的网络功能，例如创建 veth pair 设备等。</p>
+<p>不过，无论哪种网络类型，其工作方式都是类似的。通过调用 Docker 引擎的 API 发出请求，然后由 Libnetwork 做出框架性的处理，然后将请求转发给相应的 Driver。</p>
+<p><img src="C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130213705.png" alt=""></p>
+<h2 id="bridge网络">bridge网络</h2>
+<p>bridge 网络，也称为单机桥接网络，是 Docker 默认的网络模式。该网络模式只能存在于单个 Docker 主机上，其只能用于连接所在 Docker 主机上的容器。</p>
+<h3 id="1docker0网桥">1、docker0网桥</h3>
+<p>在 Linux 主机上，Docker 的 bridge 网络由 Bridge 驱动创建，其在创建时会创建一个默认的网桥 docker0。容器与网桥间是通过 veth pair 技术实现的连接，网桥与外网间是通过“网络地址转换 NAT 技术”实现的连接，即将通信的数据包中的内网地址转换为外网地址。</p>
+<p><img src="C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130215518.png" alt=""></p>
+<h5 id="创建网桥网络">创建网桥（网络）</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker network create -d bridge
+</span></span></code></pre></div><h5 id="容器互ping">容器互ping</h5>
 <ul>
-<li>数据卷</li>
-<li>Bind mounts（绑定挂载）</li>
-<li>tmpfs（临时文件系统）</li>
+<li>默认的bridge网络不能用别名来表示容器的网络，自定义的网络bridge2能用别名来表示容器的网络</li>
+<li>不同的bridge网络不能直接ping</li>
 </ul>
-<p>数据卷是宿主机中的一个特殊的文件/目录，这个文件/目录与容器中的另一个文件/目录进行了直接关联，在任何一端对文件/目录的写操作，在另一端都会同时发生相应变化。在宿主中的这个文件/目录就称为数据卷，而容器中的这个关联文件/目录则称为该数据卷在该容器中的挂载点。
-数据卷的设计目的就是为了实现数据持久化，其完全独立于容器的生命周期，属于宿主机文件系统，但不属于 UnionFS。因此，容器被删除时，不会删除其挂载的数据卷。</p>
-<p>数据卷具有如下明显特性:“</p>
-<ul>
-<li>数据卷在容器启动时初始化，如果容器启动后容器本身已经包含了数据，那么，这些数据会在容器启动后直接出现在数据卷中，反之亦然。</li>
-<li>可以对数据卷或挂载点中的内容直接修改，修改后对方立即可看到</li>
-<li>数据卷会一直存在，即使挂载数据卷的容器已经被删除“</li>
-<li>数据卷可以在容器之间共享和重用</li>
-</ul>
-<h4 id="创建读写数据卷">创建读写数据卷</h4>
-<p><strong>宿主机目录绝对路径</strong>或者<strong>容器内目录绝对路径</strong>不存在时，都会自动创建。</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -it -v /宿主机目录绝对路径:/容器内目录绝对路径 镜像
-</span></span></code></pre></div><h4 id="创建只读数据卷">创建只读数据卷</h4>
-<p>为了防止容器在运行过程中修改文件，这时需要创建只读数据卷</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -it -v /宿主机目录绝对路径:/容器内目录绝对路径:ro 镜像
-</span></span></code></pre></div><h4 id="数据卷共享">数据卷共享</h4>
-<p>指的是两个容器使用相同的数据卷时</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -it --volumes-from[容器C] 镜像
-</span></span></code></pre></div><p>通过这种方式创建的容器可以共享容器C挂载的数据卷。容器C也就是数据卷容器。</p>
-<h4 id="共享方式">共享方式</h4>
-<p><img src="C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130062337.png" alt=""></p>
-<p>避免使用应用程序容器作为数据卷容器，使用数据卷容器可以避免以下问题：</p>
-<ul>
-<li>避免由于容器被删除而导致挂载到这个容器的容器无法使用。</li>
-</ul>
-<h3 id="dockerfile持久化">Dockerfile持久化</h3>
-<p>Dockerfile 持久化,其实就是通过使用 Dockerfile 的 VOLUME 指令指定数据卷方式实现的持久化。</p>
-<p>VOLUME 指令今可以在容器中创建可以挂载数据卷的挂载点。其参数可以是字符串数组，也可以是使用空格隔开的多个纯字符串。例如，VOLUME[&quot;/var/www”,&quot;/etc/apache”] 或</p>
-<p>VOLUME /var/www /etc/apache。</p>
-<pre tabindex="0"><code class="language-Docke" data-lang="Docke">FROM centos:7
-VOLUME /opt/xx /opt/ooo
-CMD /bin/bash
-</code></pre>
+<p><img src="C:%5CUsers%5Clin%5CDesktop%5C%E7%AC%94%E8%AE%B0--Docker%5Cpic%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20231130221118.png" alt=""></p>
+<h5 id="定向连接">定向连接</h5>
+<p>定向连接下，只能从bb4连接到bb1，不能从bb1连接到bb4</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run --name bb4 -link bb1 -it box
+</span></span></code></pre></div><h2 id="none网络">none网络</h2>
+<p>none网络，容器是一个独立的Network Namespace，但没有网络接口和IP</p>
+<h5 id="创建none网络">创建none网络</h5>
+<p>使用&ndash;network none来指定创建的容器没有网络功能</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -d --name bb4 --network none box
+</span></span></code></pre></div><h2 id="host网络">host网络</h2>
+<p>host网络，是与宿主机host共用一个Network Namespace。该网络类型的容器没有独立的网络空间，没有独立IP</p>
+<h5 id="创建host网络">创建host网络</h5>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-BASH" data-lang="BASH"><span style="display:flex;"><span>docker run -d -name bb5 --network host box
+</span></span></code></pre></div><p>host模型下，容器端口直接暴露给宿主机，不需要做网络映射</p>
+
                     
                     <HR width="100%" id="EOF">
-		    <p style="color:#777;">最后修改于 2023-11-30</p>
+		    <p style="color:#777;">最后修改于 2023-12-01</p>
                     
                 </div>
             </div>
@@ -447,14 +534,14 @@ CMD /bin/bash
             <nav class="post-pagination">
 
                 
-                <a class="newer-posts" href="/posts/docker%E7%BD%91%E7%BB%9C/">
-			下回<br>Docker网络
+                <a class="newer-posts">
+			下回<br>已经到头啦。
                 </a>
                 
                 
                 
-                <a class="older-posts" href="/posts/dockerfile/">
-			上回<br>Dockerfile
+                <a class="older-posts" href="/posts/docker%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/">
+			上回<br>Docker数据持久化
                 </a>
                 
             </nav>
@@ -601,33 +688,11 @@ Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> b
 									<ul>
 								
 							
-								
-									<ul>
-								
-							
 						
 						
 							<li>
-								<a href="#%e5%ae%9a%e5%88%b6%e9%95%9c%e5%83%8f%e6%8c%81%e4%b9%85%e5%8c%96" class="nav-定制镜像持久化">
-									定制镜像持久化
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e6%95%b0%e6%8d%ae%e5%8d%b7" class="nav-数据卷">
-									数据卷
+								<a href="#docker%e7%bd%91%e7%bb%9c%e7%90%86%e8%ae%ba" class="nav-docker网络理论">
+									Docker网络理论
 								</a>
 							</li>
 						
@@ -650,62 +715,8 @@ Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> b
 						
 						
 							<li>
-								<a href="#%e5%88%9b%e5%bb%ba%e8%af%bb%e5%86%99%e6%95%b0%e6%8d%ae%e5%8d%b7" class="nav-创建读写数据卷">
-									创建读写数据卷
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e5%88%9b%e5%bb%ba%e5%8f%aa%e8%af%bb%e6%95%b0%e6%8d%ae%e5%8d%b7" class="nav-创建只读数据卷">
-									创建只读数据卷
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e6%95%b0%e6%8d%ae%e5%8d%b7%e5%85%b1%e4%ba%ab" class="nav-数据卷共享">
-									数据卷共享
-								</a>
-							</li>
-						
-						
-					
-				
-			
-				
-				
-					
-						
-						
-						
-						
-						
-							<li>
-								<a href="#%e5%85%b1%e4%ba%ab%e6%96%b9%e5%bc%8f" class="nav-共享方式">
-									共享方式
+								<a href="#1network-namespace" class="nav-1network-namespace">
+									1、Network Namespace
 								</a>
 							</li>
 						
@@ -726,8 +737,154 @@ Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> b
 						
 						
 							<li>
-								<a href="#dockerfile%e6%8c%81%e4%b9%85%e5%8c%96" class="nav-dockerfile持久化">
-									Dockerfile持久化
+								<a href="#docker%e7%bd%91%e7%bb%9c%e6%9e%b6%e6%9e%84" class="nav-docker网络架构">
+									Docker网络架构
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1cnm" class="nav-1cnm">
+									1、CNM
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2libnetwork" class="nav-2libnetwork">
+									2、Libnetwork
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#3driver" class="nav-3driver">
+									3、Driver
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#bridge%e7%bd%91%e7%bb%9c" class="nav-bridge网络">
+									bridge网络
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1docker0%e7%bd%91%e6%a1%a5" class="nav-1docker0网桥">
+									1、docker0网桥
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#none%e7%bd%91%e7%bb%9c" class="nav-none网络">
+									none网络
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#host%e7%bd%91%e7%bb%9c" class="nav-host网络">
+									host网络
 								</a>
 							</li>
 						
